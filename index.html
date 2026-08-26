@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillBridge — Bridging Students, Colleges &amp; Industry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:      #1a1a1a;
+    --panel:   #262626;
+    --panel-2: #2d2d2d;
+    --border:  #363636;
+    --ink:     #eff1f6;
+    --muted:   #8a8a8a;
+    --brand:   #ffa116;
+    --brand-dim: #cc8012;
+    --tag-green:  #00b8a3;
+    --tag-yellow: #ffc01e;
+    --tag-red:    #ff375f;
+    --font-d: 'Space Grotesk', sans-serif;
+    --font-b: 'Inter', sans-serif;
+    --font-m: 'IBM Plex Mono', monospace;
+    --ease: cubic-bezier(.16,.84,.44,1);
+  }
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-b);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; text-decoration:none; }
+  svg,img{ display:block; max-width:100%; }
+
+  /* subtle single-hue depth, no rainbow bloom */
+  .glow{ position:fixed; width:600px; height:600px; top:-260px; right:-200px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,161,22,0.10), transparent 70%);
+    filter:blur(80px); pointer-events:none; z-index:0; }
+  .grain{
+    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.035; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .page{ position:relative; z-index:2; min-height:100vh; display:flex; flex-direction:column; }
+
+  /* ---------- nav ---------- */
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px clamp(20px,5vw,64px);
+    position:sticky; top:0; z-index:40;
+    background:rgba(26,26,26,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .logo{ font-family:var(--font-d); font-weight:700; font-size:1.25rem; display:flex; align-items:center; gap:9px; }
+  .logo .mark{
+    width:26px; height:26px; border-radius:7px; background:var(--brand);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-m); font-weight:700; font-size:0.85rem; color:#1a1a1a;
+  }
+  .logo .accent{ color:var(--brand); }
+  .nav-links{ display:flex; gap:2rem; font-size:0.9rem; color:var(--muted); list-style:none; margin:0; padding:0; }
+  .nav-links a{ position:relative; padding:6px 0; transition:color .2s var(--ease); }
+  .nav-links a:hover, .nav-links a.active{ color:var(--ink); }
+  .nav-links a.active::after{ content:""; position:absolute; left:0; right:0; bottom:-2px; height:2px; background:var(--brand); border-radius:2px; }
+
+  .btn{
+    font-family:var(--font-b); font-weight:600; font-size:0.9rem;
+    padding:11px 22px; border-radius:8px; border:1px solid transparent; cursor:pointer;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease);
+  }
+  .btn:active{ transform:scale(0.97); }
+  .btn-primary{ background:var(--brand); color:#1a1a1a; box-shadow:0 6px 18px -6px rgba(255,161,22,0.55); }
+  .btn-primary:hover{ background:#ffb03d; transform:translateY(-1px); }
+  .btn-ghost{ background:var(--panel); border-color:var(--border); color:var(--ink); }
+  .btn-ghost:hover{ border-color:var(--brand); color:var(--brand); }
+  .btn svg{ width:15px; height:15px; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    display:grid; grid-template-columns:1.05fr 0.95fr; align-items:center; gap:24px;
+    max-width:1400px; width:100%; margin:0 auto; flex:1;
+    padding:clamp(40px,7vh,80px) clamp(20px,5vw,64px) clamp(50px,7vh,90px);
+  }
+  .eyebrow{
+    font-family:var(--font-m); font-size:0.78rem; font-weight:500;
+    color:var(--brand); background:rgba(255,161,22,0.12); border:1px solid rgba(255,161,22,0.3);
+    display:inline-flex; padding:6px 14px; border-radius:6px; margin-bottom:22px;
+  }
+  .tag-row{ display:flex; gap:10px; margin-bottom:26px; flex-wrap:wrap; }
+  .tag{
+    font-family:var(--font-m); font-size:0.76rem; font-weight:500;
+    padding:6px 12px; border-radius:6px; border:1px solid var(--border);
+    background:var(--panel); display:inline-flex; align-items:center; gap:7px; color:var(--muted);
+  }
+  .tag .sw{ width:8px; height:8px; border-radius:50%; }
+  .tag.tg .sw{ background:var(--tag-green); } .tag.tg{ color:var(--tag-green); border-color:rgba(0,184,163,0.3); }
+  .tag.ty .sw{ background:var(--tag-yellow); } .tag.ty{ color:var(--tag-yellow); border-color:rgba(255,192,30,0.3); }
+  .tag.tr .sw{ background:var(--tag-red); } .tag.tr{ color:var(--tag-red); border-color:rgba(255,55,95,0.3); }
+
+  .hero h1{
+    font-family:var(--font-d); font-weight:700; font-size:clamp(2.5rem,5vw,4rem);
+    line-height:1.07; letter-spacing:-0.02em; margin:0 0 22px; color:var(--ink);
+  }
+  .hero h1 .accent-text{ color:var(--brand); }
+  .hero p.lede{ font-size:1.06rem; line-height:1.65; color:var(--muted); max-width:480px; margin:0 0 34px; }
+  .hero-actions{ display:flex; gap:12px; flex-wrap:wrap; }
+
+  /* ---------- bridge stage: panel-framed like a leetcode card ---------- */
+  .bridge-stage{
+    position:relative; display:flex; align-items:center; justify-content:center;
+    min-height:440px; background:var(--panel); border:1px solid var(--border); border-radius:16px;
+    transition:transform .3s var(--ease); will-change:transform;
+  }
+  .bridge-stage::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:38px;
+    border-bottom:1px solid var(--border);
+    background:var(--panel-2);
+    border-radius:16px 16px 0 0;
+  }
+  .bridge-stage::after{
+    content:"● ● ●"; position:absolute; top:11px; left:16px; letter-spacing:5px;
+    font-size:8px; color:var(--muted); opacity:0.5;
+  }
+  .bridge-stage svg{ width:88%; max-width:520px; height:auto; margin-top:20px; }
+  .node-label{ font-family:var(--font-m); font-size:12px; letter-spacing:0.06em; text-transform:uppercase; fill:var(--muted); }
+  .cable{ stroke-dasharray:2 8; animation:dash 3s linear infinite; }
+  @keyframes dash{ to{ stroke-dashoffset:-100; } }
+  .ring{ animation:spin 70s linear infinite; transform-origin:260px 250px; }
+  .ring.rev{ animation-direction:reverse; animation-duration:95s; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce){
+    .cable, .ring, .marquee-track{ animation:none !important; }
+    .bridge-stage{ transform:none !important; }
+  }
+
+  /* ---------- stat strip (leetcode-style bordered panels) ---------- */
+  .strip{
+    border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+    background:var(--panel);
+  }
+  .strip-inner{
+    max-width:1400px; margin:0 auto; padding:0 clamp(20px,5vw,64px);
+    display:grid; grid-template-columns:repeat(3,1fr);
+  }
+  .stat{ padding:22px 20px; border-right:1px solid var(--border); }
+  .stat:last-child{ border-right:none; }
+  .stat .k{ font-family:var(--font-m); font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+  .stat .v{ font-family:var(--font-d); font-weight:700; font-size:1.5rem; }
+  .stat .v .accent-text{ color:var(--brand); }
+
+  /* ---------- footer ---------- */
+  .footer{
+    padding:22px clamp(20px,5vw,64px);
+    color:var(--muted); font-size:0.82rem;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+
+  @media (max-width:900px){
+    .nav-links{ display:none; }
+    .hero{ grid-template-columns:1fr; }
+    .bridge-stage{ order:-1; min-height:320px; }
+    .strip-inner{ grid-template-columns:1fr; }
+    .stat{ border-right:none; border-bottom:1px solid var(--border); }
+    .stat:last-child{ border-bottom:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow"></div>
+<div class="grain"></div>
+
+<div class="page">
+
+  <nav class="nav">
+    <div class="logo">
+      <span class="mark">S</span>
+      Skill<span class="accent">Bridge</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="btn btn-ghost">Sign In</button>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">// connecting three worlds</div>
+
+      <h1>Bridging Students,<br><span class="accent-text">Colleges &amp; Industry</span><br>Together</h1>
+      <p class="lede">One network where talent, education and opportunity meet — so students grow, colleges empower, and industry discovers what's next.</p>
+
+      <div class="tag-row">
+        <span class="tag tg"><span class="sw"></span>student</span>
+        <span class="tag ty"><span class="sw"></span>teacher</span>
+        <span class="tag tr"><span class="sw"></span>recruiter</span>
+      </div>
+
+      <div class="hero-actions">
+        <button class="btn btn-primary">
+          Get Started
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <button class="btn btn-ghost">Sign In</button>
+      </div>
+    </div>
+
+    <div class="bridge-stage" id="bridgeStage">
+      <svg viewBox="0 0 520 460" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="nodeGreen" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#e6fffb"/><stop offset="55%" stop-color="#00b8a3"/><stop offset="100%" stop-color="#00897a"/>
+          </radialGradient>
+          <radialGradient id="nodeYellow" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#fffaf0"/><stop offset="55%" stop-color="#ffc01e"/><stop offset="100%" stop-color="#e0a20a"/>
+          </radialGradient>
+          <radialGradient id="nodeRed" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#fff0f3"/><stop offset="55%" stop-color="#ff375f"/><stop offset="100%" stop-color="#d81c46"/>
+          </radialGradient>
+        </defs>
+
+        <circle class="ring" cx="260" cy="230" r="186" fill="none" stroke="rgba(255,161,22,0.18)" stroke-dasharray="3 10"/>
+        <circle class="ring rev" cx="260" cy="230" r="142" fill="none" stroke="rgba(255,255,255,0.08)" stroke-dasharray="2 8"/>
+
+        <path id="cableStu" class="cable" d="M260,238 C260,175 260,138 260,90" fill="none" stroke="#00b8a3" stroke-width="1.6" opacity="0.8"/>
+        <path id="cableCol" class="cable" d="M260,238 C200,278 160,316 128,342" fill="none" stroke="#ffc01e" stroke-width="1.6" opacity="0.8"/>
+        <path id="cableInd" class="cable" d="M260,238 C320,278 360,316 392,342" fill="none" stroke="#ff375f" stroke-width="1.6" opacity="0.8"/>
+
+        <g transform="translate(260,238)">
+          <rect x="-2" y="-42" width="4" height="42" fill="rgba(239,241,246,0.5)"/>
+          <path d="M-84,16 C-36,-22 36,-22 84,16" fill="none" stroke="rgba(239,241,246,0.55)" stroke-width="3" stroke-linecap="round"/>
+          <line x1="-84" y1="16" x2="-84" y2="36" stroke="rgba(239,241,246,0.35)" stroke-width="3"/>
+          <line x1="84" y1="16" x2="84" y2="36" stroke="rgba(239,241,246,0.35)" stroke-width="3"/>
+          <line x1="-84" y1="36" x2="84" y2="36" stroke="rgba(239,241,246,0.55)" stroke-width="3" stroke-linecap="round"/>
+          <g stroke="rgba(239,241,246,0.28)" stroke-width="1.4">
+            <line x1="-58" y1="-4" x2="-58" y2="36"/>
+            <line x1="-29" y1="-16" x2="-29" y2="36"/>
+            <line x1="0" y1="-21" x2="0" y2="36"/>
+            <line x1="29" y1="-16" x2="29" y2="36"/>
+            <line x1="58" y1="-4" x2="58" y2="36"/>
+          </g>
+        </g>
+
+        <circle r="3.2" fill="#eafffa"><animateMotion dur="4.2s" repeatCount="indefinite" begin="0s"><mpath href="#cableStu"/></animateMotion></circle>
+        <circle r="3.2" fill="#fffaf0"><animateMotion dur="4.2s" repeatCount="indefinite" begin="1.4s"><mpath href="#cableCol"/></animateMotion></circle>
+        <circle r="3.2" fill="#fff0f3"><animateMotion dur="4.2s" repeatCount="indefinite" begin="2.8s"><mpath href="#cableInd"/></animateMotion></circle>
+
+        <g style="filter:drop-shadow(0 0 14px rgba(0,184,163,0.5))"><circle cx="260" cy="90" r="42" fill="url(#nodeGreen)"/></g>
+        <g transform="translate(246,78)" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M0 8 L14 0 L28 8 L14 16 Z"/>
+          <path d="M6 11 V18 C6 20 10 22 14 22 C18 22 22 20 22 18 V11"/>
+          <line x1="28" y1="8" x2="28" y2="16"/>
+        </g>
+        <text x="260" y="152" text-anchor="middle" class="node-label">Students</text>
+
+        <g style="filter:drop-shadow(0 0 14px rgba(255,192,30,0.5))"><circle cx="128" cy="342" r="38" fill="url(#nodeYellow)"/></g>
+        <g transform="translate(115,331)" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M0 7 L13 0 L26 7"/>
+          <line x1="2" y1="7" x2="24" y2="7"/>
+          <line x1="4" y1="7" x2="4" y2="19"/><line x1="10" y1="7" x2="10" y2="19"/>
+          <line x1="16" y1="7" x2="16" y2="19"/><line x1="22" y1="7" x2="22" y2="19"/>
+          <line x1="1" y1="19" x2="25" y2="19"/>
+        </g>
+        <text x="128" y="396" text-anchor="middle" class="node-label">Colleges</text>
+
+        <g style="filter:drop-shadow(0 0 14px rgba(255,55,95,0.5))"><circle cx="392" cy="342" r="38" fill="url(#nodeRed)"/></g>
+        <g transform="translate(379,332)" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="0" y="5" width="26" height="17" rx="2"/>
+          <path d="M8 5 V2 C8 1 9 0 10 0 H16 C17 0 18 1 18 2 V5"/>
+          <line x1="0" y1="13" x2="26" y2="13"/>
+        </g>
+        <text x="392" y="396" text-anchor="middle" class="node-label">Industry</text>
+      </svg>
+    </div>
+  </section>
+
+  <div class="strip">
+    <div class="strip-inner">
+      <div class="stat"><div class="k">for students</div><div class="v">Build a <span class="accent-text">profile</span></div></div>
+      <div class="stat"><div class="k">for teachers</div><div class="v">Guide the <span class="accent-text">network</span></div></div>
+      <div class="stat"><div class="k">for recruiters</div><div class="v">Hire real <span class="accent-text">talent</span></div></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>© 2026 SkillBridge</span>
+    <span>Built for students, colleges &amp; industry — together.</span>
+  </footer>
+</div>
+
+<script>
+  var stage = document.getElementById('bridgeStage');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (stage && !reduceMotion && window.matchMedia('(hover:hover)').matches) {
+    document.addEventListener('mousemove', function (e) {
+      var x = (e.clientX / window.innerWidth - 0.5) * 10;
+      var y = (e.clientY / window.innerHeight - 0.5) * 10;
+      stage.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+    });
+  }
+</script>
+
+</body>
+</html>
