@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SkillBridge — Bridging Students, Colleges &amp; Industry</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ffa116'/%3E%3Cg fill='none' stroke='%231a1a1a' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 40 L14 26 M50 40 L50 26'/%3E%3Cpath d='M14 26 C24 6, 40 6, 50 26'/%3E%3Cline x1='9' y1='40' x2='55' y2='40'/%3E%3Cline x1='24' y1='28' x2='24' y2='40'/%3E%3Cline x1='32' y1='20' x2='32' y2='40'/%3E%3Cline x1='40' y1='28' x2='40' y2='40'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:      #1a1a1a;
@@ -48,6 +49,10 @@
 
   .page{ position:relative; z-index:2; min-height:100vh; display:flex; flex-direction:column; }
 
+  /* ---------- top accent ---------- */
+  .top-accent{ position:fixed; top:0; left:0; right:0; height:3px; z-index:50;
+    background:linear-gradient(90deg, transparent, var(--brand), transparent); opacity:0.8; }
+
   /* ---------- nav ---------- */
   .nav{
     display:flex; align-items:center; justify-content:space-between;
@@ -59,15 +64,21 @@
   }
   .logo{ font-family:var(--font-d); font-weight:700; font-size:1.25rem; display:flex; align-items:center; gap:9px; }
   .logo .mark{
-    width:26px; height:26px; border-radius:7px; background:var(--brand);
+    width:30px; height:30px; border-radius:8px; background:var(--brand);
     display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-m); font-weight:700; font-size:0.85rem; color:#1a1a1a;
+    box-shadow:0 4px 14px -4px rgba(255,161,22,0.6);
   }
   .logo .accent{ color:var(--brand); }
+  .nav-right{ display:flex; align-items:center; gap:10px; }
   .nav-links{ display:flex; gap:2rem; font-size:0.9rem; color:var(--muted); list-style:none; margin:0; padding:0; }
   .nav-links a{ position:relative; padding:6px 0; transition:color .2s var(--ease); }
   .nav-links a:hover, .nav-links a.active{ color:var(--ink); }
   .nav-links a.active::after{ content:""; position:absolute; left:0; right:0; bottom:-2px; height:2px; background:var(--brand); border-radius:2px; }
+  .nav-toggle{ display:none; flex-direction:column; gap:4px; background:none; border:none; padding:8px; cursor:pointer; }
+  .nav-toggle span{ width:20px; height:2px; background:var(--ink); border-radius:2px; transition:transform .2s var(--ease), opacity .2s var(--ease); }
+  .nav-toggle.open span:nth-child(1){ transform:translateY(6px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2){ opacity:0; }
+  .nav-toggle.open span:nth-child(3){ transform:translateY(-6px) rotate(-45deg); }
 
   .btn{
     font-family:var(--font-b); font-weight:600; font-size:0.9rem;
@@ -76,8 +87,11 @@
     transition:transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease);
   }
   .btn:active{ transform:scale(0.97); }
-  .btn-primary{ background:var(--brand); color:#1a1a1a; box-shadow:0 6px 18px -6px rgba(255,161,22,0.55); }
-  .btn-primary:hover{ background:#ffb03d; transform:translateY(-1px); }
+  .btn-primary{
+    background:linear-gradient(135deg, #ffb03d, var(--brand) 60%, #f0900a);
+    color:#1a1a1a; box-shadow:0 6px 20px -6px rgba(255,161,22,0.55);
+  }
+  .btn-primary:hover{ box-shadow:0 8px 26px -6px rgba(255,161,22,0.75); transform:translateY(-1px); }
   .btn-ghost{ background:var(--panel); border-color:var(--border); color:var(--ink); }
   .btn-ghost:hover{ border-color:var(--brand); color:var(--brand); }
   .btn svg{ width:15px; height:15px; }
@@ -92,6 +106,7 @@
     font-family:var(--font-m); font-size:0.78rem; font-weight:500;
     color:var(--brand); background:rgba(255,161,22,0.12); border:1px solid rgba(255,161,22,0.3);
     display:inline-flex; padding:6px 14px; border-radius:6px; margin-bottom:22px;
+    box-shadow:0 0 20px -8px rgba(255,161,22,0.5);
   }
   .tag-row{ display:flex; gap:10px; margin-bottom:26px; flex-wrap:wrap; }
   .tag{
@@ -105,18 +120,31 @@
   .tag.tr .sw{ background:var(--tag-red); } .tag.tr{ color:var(--tag-red); border-color:rgba(255,55,95,0.3); }
 
   .hero h1{
-    font-family:var(--font-d); font-weight:700; font-size:clamp(2.5rem,5vw,4rem);
-    line-height:1.07; letter-spacing:-0.02em; margin:0 0 22px; color:var(--ink);
+    font-family:var(--font-d); font-weight:800; font-size:clamp(2.6rem,5.2vw,4.2rem);
+    line-height:1.08; letter-spacing:-0.025em; margin:0 0 22px; color:var(--ink);
   }
-  .hero h1 .accent-text{ color:var(--brand); }
+  .hero h1 .accent-text{
+    background:linear-gradient(100deg, #ffb236 10%, var(--brand) 55%, #ff8a3d 90%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 22px rgba(255,161,22,0.28));
+  }
   .hero p.lede{ font-size:1.06rem; line-height:1.65; color:var(--muted); max-width:480px; margin:0 0 34px; }
   .hero-actions{ display:flex; gap:12px; flex-wrap:wrap; }
+
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
+  .hero-copy > *{ opacity:0; animation:fadeUp .7s var(--ease) forwards; }
+  .hero-copy > .eyebrow{ animation-delay:.05s; }
+  .hero-copy > .tag-row{ animation-delay:.15s; }
+  .hero-copy > h1{ animation-delay:.25s; }
+  .hero-copy > p.lede{ animation-delay:.4s; }
+  .hero-copy > .hero-actions{ animation-delay:.52s; }
+  .bridge-stage{ opacity:0; animation:fadeUp .8s var(--ease) forwards; animation-delay:.3s; }
 
   /* ---------- bridge stage: panel-framed like a leetcode card ---------- */
   .bridge-stage{
     position:relative; display:flex; align-items:center; justify-content:center;
     min-height:440px; background:var(--panel); border:1px solid var(--border); border-radius:16px;
-    transition:transform .3s var(--ease); will-change:transform;
+    overflow:hidden;
   }
   .bridge-stage::before{
     content:""; position:absolute; top:0; left:0; right:0; height:38px;
@@ -138,14 +166,19 @@
 
   @media (prefers-reduced-motion: reduce){
     .cable, .ring, .marquee-track{ animation:none !important; }
-    .bridge-stage{ transform:none !important; }
+    .reveal{ transition:none; }
+    .hero-copy > *, .bridge-stage{ animation:none !important; opacity:1 !important; transform:none !important; }
   }
 
   /* ---------- stat strip (leetcode-style bordered panels) ---------- */
   .strip{
-    border-top:1px solid var(--border); border-bottom:1px solid var(--border);
-    background:var(--panel);
+    position:relative; background:var(--panel);
   }
+  .strip::before, .strip::after{
+    content:""; position:absolute; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent, var(--border) 15%, var(--border) 85%, transparent);
+  }
+  .strip::before{ top:0; } .strip::after{ bottom:0; }
   .strip-inner{
     max-width:1400px; margin:0 auto; padding:0 clamp(20px,5vw,64px);
     display:grid; grid-template-columns:repeat(3,1fr);
@@ -158,23 +191,177 @@
 
   /* ---------- footer ---------- */
   .footer{
+    position:relative;
     padding:22px clamp(20px,5vw,64px);
     color:var(--muted); font-size:0.82rem;
     display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
   }
+  .footer::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent, var(--border) 15%, var(--border) 85%, transparent);
+  }
+
+  /* ---------- shared section scaffolding ---------- */
+  section[id]{ scroll-margin-top:84px; }
+  .section-inner{ max-width:1400px; margin:0 auto; padding:clamp(60px,9vh,96px) clamp(20px,5vw,64px); }
+  .section-head{ max-width:640px; margin-bottom:44px; }
+  .section-head h2{
+    font-family:var(--font-d); font-weight:700; color:var(--ink);
+    font-size:clamp(1.7rem,3.4vw,2.4rem); line-height:1.18; letter-spacing:-0.01em; margin:0 0 14px;
+  }
+  .section-head p.lede{ font-size:1rem; line-height:1.65; color:var(--muted); margin:0; }
+
+  /* ---------- about ---------- */
+  .about{ position:relative; }
+  .about::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent, var(--border) 15%, var(--border) 85%, transparent);
+  }
+  .about-inner{ display:grid; grid-template-columns:0.95fr 1.05fr; gap:56px; align-items:start; }
+  .about-copy h2{ font-family:var(--font-d); font-weight:700; color:var(--ink); font-size:clamp(1.7rem,3.4vw,2.3rem); line-height:1.18; letter-spacing:-0.01em; margin:0 0 16px; }
+  .about-copy p.lede{ font-size:1rem; line-height:1.7; color:var(--muted); max-width:440px; margin:0; }
+  .pillar-grid{ display:grid; gap:16px; }
+  .pillar{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:20px 22px; display:flex; gap:16px; align-items:flex-start;
+    box-shadow:0 10px 30px -22px rgba(0,0,0,0.7);
+    transition:border-color .2s var(--ease), transform .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .pillar:hover{ transform:translateX(4px); box-shadow:0 14px 34px -20px rgba(0,0,0,0.8); }
+  .pillar-icon{
+    flex:none; width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    background:var(--panel-2); border:1px solid var(--border);
+  }
+  .pillar h3{ font-family:var(--font-d); font-size:1.02rem; font-weight:600; margin:0 0 6px; color:var(--ink); }
+  .pillar p{ font-size:0.9rem; line-height:1.55; color:var(--muted); margin:0; }
+  .pillar-green:hover{ border-color:rgba(0,184,163,0.4); }
+  .pillar-yellow:hover{ border-color:rgba(255,192,30,0.4); }
+  .pillar-red:hover{ border-color:rgba(255,55,95,0.4); }
+  .pillar-green .pillar-icon{ color:var(--tag-green); }
+  .pillar-yellow .pillar-icon{ color:var(--tag-yellow); }
+  .pillar-red .pillar-icon{ color:var(--tag-red); }
+
+  /* ---------- features ---------- */
+  .features{ position:relative; background:var(--panel); }
+  .features::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent, var(--border) 15%, var(--border) 85%, transparent);
+  }
+  .feature-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+  .feature-card{
+    background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:26px 24px;
+    box-shadow:0 10px 30px -22px rgba(0,0,0,0.7);
+    transition:border-color .2s var(--ease), transform .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .feature-card:hover{ border-color:var(--brand); transform:translateY(-3px); box-shadow:0 16px 34px -18px rgba(0,0,0,0.8); }
+  .f-index{ font-family:var(--font-m); font-size:0.75rem; color:var(--brand); margin-bottom:14px; }
+  .feature-card h3{ font-family:var(--font-d); font-size:1.05rem; font-weight:600; margin:0 0 8px; color:var(--ink); }
+  .feature-card p{ font-size:0.9rem; line-height:1.6; color:var(--muted); margin:0; }
+
+  /* ---------- contact ---------- */
+  .contact{ position:relative; }
+  .contact::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent, var(--border) 15%, var(--border) 85%, transparent);
+  }
+  .contact-inner{ display:flex; justify-content:space-between; align-items:center; gap:32px; flex-wrap:wrap; }
+  .contact-inner h2{ font-family:var(--font-d); font-weight:700; color:var(--ink); font-size:clamp(1.6rem,3.2vw,2.2rem); line-height:1.18; letter-spacing:-0.01em; margin:0 0 12px; }
+  .contact-inner p.lede{ font-size:1rem; line-height:1.65; color:var(--muted); max-width:460px; margin:0; }
+  .contact-actions{ display:flex; gap:12px; flex-wrap:wrap; flex:none; }
+
+  /* ---------- scroll reveal ---------- */
+  .reveal{ opacity:0; transform:translateY(18px); transition:opacity .6s var(--ease), transform .6s var(--ease); }
+  .reveal.visible{ opacity:1; transform:none; }
 
   @media (max-width:900px){
-    .nav-links{ display:none; }
+    .nav-toggle{ display:flex; }
+    .nav-links{
+      position:absolute; top:100%; left:0; right:0; flex-direction:column; gap:0;
+      background:rgba(26,26,26,0.97); backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border);
+      max-height:0; overflow:hidden; opacity:0; padding:0 clamp(20px,5vw,64px);
+      transition:max-height .3s var(--ease), opacity .2s var(--ease), padding .3s var(--ease);
+    }
+    .nav-links.open{ max-height:280px; opacity:1; padding:14px clamp(20px,5vw,64px) 18px; }
+    .nav-links li{ padding:10px 0; border-bottom:1px solid var(--border); }
+    .nav-links li:last-child{ border-bottom:none; }
     .hero{ grid-template-columns:1fr; }
     .bridge-stage{ order:-1; min-height:320px; }
     .strip-inner{ grid-template-columns:1fr; }
     .stat{ border-right:none; border-bottom:1px solid var(--border); }
     .stat:last-child{ border-bottom:none; }
+    .about-inner{ grid-template-columns:1fr; }
+    .feature-grid{ grid-template-columns:1fr; }
+    .contact-inner{ flex-direction:column; align-items:flex-start; }
   }
+
+  /* ---------- modal (sign in / get started / contact) ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center;
+    background:rgba(10,10,10,0.62); backdrop-filter:blur(6px);
+    opacity:0; visibility:hidden; transition:opacity .25s var(--ease), visibility 0s .25s;
+    padding:20px;
+  }
+  .modal-overlay.open{ opacity:1; visibility:visible; transition:opacity .25s var(--ease); }
+  .modal{
+    position:relative; width:100%; max-width:420px; max-height:88vh; overflow-y:auto;
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:16px; padding:32px 28px 28px;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.75);
+    transform:translateY(14px) scale(0.98); transition:transform .25s var(--ease);
+  }
+  .modal-overlay.open .modal{ transform:none; }
+  .modal-close{
+    position:absolute; top:16px; right:16px; width:30px; height:30px; border-radius:8px;
+    background:var(--panel-2); border:1px solid var(--border); color:var(--muted);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:color .2s var(--ease), border-color .2s var(--ease);
+  }
+  .modal-close:hover{ color:var(--ink); border-color:var(--brand); }
+  .modal-close svg{ width:14px; height:14px; }
+  .modal-panel{ display:none; }
+  .modal-panel.active{ display:block; }
+  .modal h3{ font-family:var(--font-d); font-weight:700; font-size:1.35rem; color:var(--ink); margin:0 0 18px; letter-spacing:-0.01em; }
+  .modal-form{ display:flex; flex-direction:column; gap:14px; }
+  .modal-form label{ display:flex; flex-direction:column; gap:6px; font-size:0.78rem; color:var(--muted); font-family:var(--font-m); text-transform:uppercase; letter-spacing:0.04em; }
+  .modal-form input, .modal-form textarea{
+    font-family:var(--font-b); font-size:0.92rem; color:var(--ink); background:var(--bg);
+    border:1px solid var(--border); border-radius:8px; padding:10px 12px; resize:vertical;
+    transition:border-color .2s var(--ease);
+  }
+  .modal-form input:focus, .modal-form textarea:focus{ outline:none; border-color:var(--brand); }
+  .modal-submit{ width:100%; justify-content:center; margin-top:4px; }
+  .modal-switch{ font-size:0.85rem; color:var(--muted); margin:16px 0 0; text-align:center; }
+  .modal-switch a{ color:var(--brand); text-decoration:underline; text-underline-offset:2px; }
+  .role-select{ display:flex; gap:8px; margin-bottom:18px; }
+  .role-btn{
+    flex:1; font-family:var(--font-m); font-size:0.78rem; padding:9px 6px; border-radius:8px;
+    border:1px solid var(--border); background:var(--bg); color:var(--muted); cursor:pointer;
+    transition:border-color .2s var(--ease), color .2s var(--ease), background .2s var(--ease);
+  }
+  .role-btn:hover{ color:var(--ink); }
+  .role-green.active{ border-color:rgba(0,184,163,0.5); color:var(--tag-green); background:rgba(0,184,163,0.1); }
+  .role-yellow.active{ border-color:rgba(255,192,30,0.5); color:var(--tag-yellow); background:rgba(255,192,30,0.1); }
+  .role-red.active{ border-color:rgba(255,55,95,0.5); color:var(--tag-red); background:rgba(255,55,95,0.1); }
+  .modal-success{ display:none; text-align:center; padding:8px 0 4px; }
+  .modal-success.active{ display:block; }
+  .modal-success-icon{
+    width:52px; height:52px; border-radius:50%; background:var(--brand); margin:0 auto 18px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .modal-success-icon svg{ width:22px; height:22px; }
+  .modal-success h3{ margin-bottom:8px; }
+  .modal-success p{ color:var(--muted); font-size:0.92rem; margin:0; }
+
+  @media (prefers-reduced-motion: reduce){
+    .modal-overlay, .modal{ transition:none; }
+  }
+
 </style>
 </head>
 <body>
 
+<div class="top-accent"></div>
 <div class="glow"></div>
 <div class="grain"></div>
 
@@ -182,16 +369,30 @@
 
   <nav class="nav">
     <div class="logo">
-      <span class="mark">S</span>
+      <span class="mark">
+        <svg viewBox="0 0 26 22" width="17" height="14" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 15 L2 9 M24 15 L24 9"/>
+          <path d="M2 9 C 9 -1 17 -1 24 9"/>
+          <line x1="0" y1="15" x2="26" y2="15"/>
+          <line x1="7" y1="10" x2="7" y2="15"/>
+          <line x1="13" y1="7.5" x2="13" y2="15"/>
+          <line x1="19" y1="10" x2="19" y2="15"/>
+        </svg>
+      </span>
       Skill<span class="accent">Bridge</span>
     </div>
-    <ul class="nav-links">
-      <li><a href="#" class="active">Home</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#features">Features</a></li>
-      <li><a href="#contact">Contact</a></li>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#" class="active" data-nav="home">Home</a></li>
+      <li><a href="#about" data-nav="about">About</a></li>
+      <li><a href="#features" data-nav="features">Features</a></li>
+      <li><a href="#contact" data-nav="contact">Contact</a></li>
     </ul>
-    <button class="btn btn-ghost">Sign In</button>
+    <div class="nav-right">
+      <button class="btn btn-ghost" data-modal="signin">Sign In</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </nav>
 
   <section class="hero">
@@ -208,11 +409,11 @@
       </div>
 
       <div class="hero-actions">
-        <button class="btn btn-primary">
+        <button class="btn btn-primary" data-modal="get-started">
           Get Started
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
-        <button class="btn btn-ghost">Sign In</button>
+        <button class="btn btn-ghost" data-modal="signin">Sign In</button>
       </div>
     </div>
 
@@ -228,33 +429,66 @@
           <radialGradient id="nodeRed" cx="35%" cy="30%" r="75%">
             <stop offset="0%" stop-color="#fff0f3"/><stop offset="55%" stop-color="#ff375f"/><stop offset="100%" stop-color="#d81c46"/>
           </radialGradient>
+          <radialGradient id="horizonGlow" cx="50%" cy="80%" r="70%">
+            <stop offset="0%" stop-color="rgba(255,161,22,0.30)"/>
+            <stop offset="55%" stop-color="rgba(255,161,22,0.08)"/>
+            <stop offset="100%" stop-color="rgba(255,161,22,0)"/>
+          </radialGradient>
+          <linearGradient id="reflectFade" gradientUnits="userSpaceOnUse" x1="0" y1="398" x2="0" y2="460">
+            <stop offset="0%" stop-color="#fff" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <mask id="reflectMask">
+            <rect x="0" y="0" width="520" height="460" fill="url(#reflectFade)"/>
+          </mask>
         </defs>
+
+        <rect x="0" y="0" width="520" height="460" fill="url(#horizonGlow)"/>
 
         <circle class="ring" cx="260" cy="230" r="186" fill="none" stroke="rgba(255,161,22,0.18)" stroke-dasharray="3 10"/>
         <circle class="ring rev" cx="260" cy="230" r="142" fill="none" stroke="rgba(255,255,255,0.08)" stroke-dasharray="2 8"/>
 
-        <path id="cableStu" class="cable" d="M260,238 C260,175 260,138 260,90" fill="none" stroke="#00b8a3" stroke-width="1.6" opacity="0.8"/>
-        <path id="cableCol" class="cable" d="M260,238 C200,278 160,316 128,342" fill="none" stroke="#ffc01e" stroke-width="1.6" opacity="0.8"/>
-        <path id="cableInd" class="cable" d="M260,238 C320,278 360,316 392,342" fill="none" stroke="#ff375f" stroke-width="1.6" opacity="0.8"/>
-
-        <g transform="translate(260,238)">
-          <rect x="-2" y="-42" width="4" height="42" fill="rgba(239,241,246,0.5)"/>
-          <path d="M-84,16 C-36,-22 36,-22 84,16" fill="none" stroke="rgba(239,241,246,0.55)" stroke-width="3" stroke-linecap="round"/>
-          <line x1="-84" y1="16" x2="-84" y2="36" stroke="rgba(239,241,246,0.35)" stroke-width="3"/>
-          <line x1="84" y1="16" x2="84" y2="36" stroke="rgba(239,241,246,0.35)" stroke-width="3"/>
-          <line x1="-84" y1="36" x2="84" y2="36" stroke="rgba(239,241,246,0.55)" stroke-width="3" stroke-linecap="round"/>
-          <g stroke="rgba(239,241,246,0.28)" stroke-width="1.4">
-            <line x1="-58" y1="-4" x2="-58" y2="36"/>
-            <line x1="-29" y1="-16" x2="-29" y2="36"/>
-            <line x1="0" y1="-21" x2="0" y2="36"/>
-            <line x1="29" y1="-16" x2="29" y2="36"/>
-            <line x1="58" y1="-4" x2="58" y2="36"/>
-          </g>
+        <!-- reflection: faded mirror of the deck/piers in the "water" below -->
+        <g transform="matrix(1,0,0,-1,0,796)" opacity="0.32" mask="url(#reflectMask)">
+          <path d="M128,342 L392,342" fill="none" stroke="rgba(239,241,246,0.6)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M128,347 L162,370 L196,347 L230,370 L264,347 L298,370 L332,347 L366,370 L392,347" fill="none" stroke="rgba(239,241,246,0.16)" stroke-width="1.6"/>
+          <line x1="128" y1="347" x2="128" y2="372" stroke="rgba(239,241,246,0.3)" stroke-width="3"/>
+          <line x1="392" y1="347" x2="392" y2="372" stroke="rgba(239,241,246,0.3)" stroke-width="3"/>
+          <path d="M260,342 L260,300" fill="none" stroke="#00b8a3" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
         </g>
 
-        <circle r="3.2" fill="#eafffa"><animateMotion dur="4.2s" repeatCount="indefinite" begin="0s"><mpath href="#cableStu"/></animateMotion></circle>
-        <circle r="3.2" fill="#fffaf0"><animateMotion dur="4.2s" repeatCount="indefinite" begin="1.4s"><mpath href="#cableCol"/></animateMotion></circle>
-        <circle r="3.2" fill="#fff0f3"><animateMotion dur="4.2s" repeatCount="indefinite" begin="2.8s"><mpath href="#cableInd"/></animateMotion></circle>
+        <g id="bridgeStructure">
+          <!-- deck: the bridge itself, spanning Colleges <-> Industry -->
+          <path id="deckPath" d="M128,342 L392,342" fill="none" stroke="rgba(239,241,246,0.6)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M128,335 L392,335" fill="none" stroke="rgba(239,241,246,0.3)" stroke-width="1.4"/>
+          <g stroke="rgba(239,241,246,0.28)" stroke-width="1.4">
+            <line x1="158" y1="335" x2="158" y2="344"/>
+            <line x1="194" y1="335" x2="194" y2="344"/>
+            <line x1="230" y1="335" x2="230" y2="344"/>
+            <line x1="290" y1="335" x2="290" y2="344"/>
+            <line x1="326" y1="335" x2="326" y2="344"/>
+            <line x1="362" y1="335" x2="362" y2="344"/>
+          </g>
+          <!-- girder truss + piers under the deck -->
+          <path d="M128,347 L162,370 L196,347 L230,370 L264,347 L298,370 L332,347 L366,370 L392,347" fill="none" stroke="rgba(239,241,246,0.16)" stroke-width="1.6"/>
+          <line x1="128" y1="347" x2="128" y2="372" stroke="rgba(239,241,246,0.3)" stroke-width="3"/>
+          <line x1="392" y1="347" x2="392" y2="372" stroke="rgba(239,241,246,0.3)" stroke-width="3"/>
+
+          <!-- pylon: rises from the deck up to Students, this is what "Skill" bridges into -->
+          <path id="mastPath" class="cable" d="M260,342 L260,90" fill="none" stroke="#00b8a3" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+          <path d="M251,150 L269,150" stroke="rgba(239,241,246,0.6)" stroke-width="3" stroke-linecap="round"/>
+
+          <!-- stay cables fanning from the pylon head down to the deck -->
+          <path id="stayCol1" class="cable" d="M260,150 L128,342" fill="none" stroke="#ffc01e" stroke-width="1.4" opacity="0.75"/>
+          <path id="stayCol2" class="cable" d="M260,150 L195,342" fill="none" stroke="#ffc01e" stroke-width="1.4" opacity="0.55"/>
+          <path id="stayInd1" class="cable" d="M260,150 L325,342" fill="none" stroke="#ff375f" stroke-width="1.4" opacity="0.55"/>
+          <path id="stayInd2" class="cable" d="M260,150 L392,342" fill="none" stroke="#ff375f" stroke-width="1.4" opacity="0.75"/>
+        </g>
+
+        <circle r="3.2" fill="#eafffa"><animateMotion dur="3.4s" repeatCount="indefinite" begin="0s"><mpath href="#mastPath"/></animateMotion></circle>
+        <circle r="3" fill="#fffaf0"><animateMotion dur="4.2s" repeatCount="indefinite" begin="0.6s"><mpath href="#stayCol2"/></animateMotion></circle>
+        <circle r="3" fill="#fff0f3"><animateMotion dur="4.2s" repeatCount="indefinite" begin="1.9s"><mpath href="#stayInd1"/></animateMotion></circle>
+        <circle r="3.4" fill="#eff1f6"><animateMotion dur="5.6s" repeatCount="indefinite" begin="0.3s"><mpath href="#deckPath"/></animateMotion></circle>
 
         <g style="filter:drop-shadow(0 0 14px rgba(0,184,163,0.5))"><circle cx="260" cy="90" r="42" fill="url(#nodeGreen)"/></g>
         <g transform="translate(246,78)" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -293,23 +527,306 @@
     </div>
   </div>
 
+  <section id="about" class="about">
+    <div class="section-inner about-inner">
+      <div class="about-copy reveal">
+        <div class="eyebrow">// why we exist</div>
+        <h2>One platform,<br><span class="accent-text">three worlds</span> in sync</h2>
+        <p class="lede">Students graduate with skills nobody's verified. Colleges track outcomes on spreadsheets. Recruiters can't tell real ability from a polished résumé. SkillBridge gives all three a shared source of truth.</p>
+      </div>
+      <div class="pillar-grid">
+        <div class="pillar pillar-green reveal">
+          <div class="pillar-icon">
+            <svg viewBox="0 0 28 22" width="26" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M0 8 L14 0 L28 8 L14 16 Z"/>
+              <path d="M6 11 V18 C6 20 10 22 14 22 C18 22 22 20 22 18 V11"/>
+              <line x1="28" y1="8" x2="28" y2="16"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Students</h3>
+            <p>A verified skill profile — projects, certifications, and endorsements — that speaks for itself.</p>
+          </div>
+        </div>
+        <div class="pillar pillar-yellow reveal">
+          <div class="pillar-icon">
+            <svg viewBox="0 0 26 19" width="24" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M0 7 L13 0 L26 7"/>
+              <line x1="2" y1="7" x2="24" y2="7"/>
+              <line x1="4" y1="7" x2="4" y2="19"/><line x1="10" y1="7" x2="10" y2="19"/>
+              <line x1="16" y1="7" x2="16" y2="19"/><line x1="22" y1="7" x2="22" y2="19"/>
+              <line x1="1" y1="19" x2="25" y2="19"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Colleges</h3>
+            <p>Live dashboards on placement outcomes and skill gaps across every batch — no end-of-year guesswork.</p>
+          </div>
+        </div>
+        <div class="pillar pillar-red reveal">
+          <div class="pillar-icon">
+            <svg viewBox="0 0 26 22" width="24" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="0" y="5" width="26" height="17" rx="2"/>
+              <path d="M8 5 V2 C8 1 9 0 10 0 H16 C17 0 18 1 18 2 V5"/>
+              <line x1="0" y1="13" x2="26" y2="13"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Industry</h3>
+            <p>Search by demonstrated skill, not keyword-stuffed résumés, and reach students before graduation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="features">
+    <div class="section-inner">
+      <div class="section-head reveal">
+        <div class="eyebrow">// the platform</div>
+        <h2>What <span class="accent-text">SkillBridge</span> actually does</h2>
+        <p class="lede">Four pieces, one loop: skills get verified, colleges get visibility, recruiters get signal, and students get found.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card reveal">
+          <div class="f-index">01</div>
+          <h3>Verified skill profiles</h3>
+          <p>Every project or certificate a student adds gets peer- or faculty-verified, so a profile actually means something.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="f-index">02</div>
+          <h3>Placement analytics</h3>
+          <p>Colleges see skill coverage and internship conversion in real time — ahead of placement season, not after it.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="f-index">03</div>
+          <h3>Skill-first search</h3>
+          <p>Recruiters filter by verified skill and project history instead of digging through stacks of PDFs.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="f-index">04</div>
+          <h3>Opportunity feed</h3>
+          <p>Internships, hackathons, and campus drives land in a student's feed, matched to their actual profile.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="section-inner contact-inner reveal">
+      <div>
+        <div class="eyebrow">// get involved</div>
+        <h2>Ready to <span class="accent-text">cross the bridge?</span></h2>
+        <p class="lede">Whether you're a student building a profile, a college piloting the dashboard, or a recruiter hiring — we're onboarding early users now.</p>
+      </div>
+      <div class="contact-actions">
+        <button class="btn btn-primary" data-modal="get-started">
+          Get Started
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <button class="btn btn-ghost" data-modal="contact">Contact us</button>
+      </div>
+    </div>
+  </section>
+
   <footer class="footer">
     <span>© 2026 SkillBridge</span>
     <span>Built for students, colleges &amp; industry — together.</span>
   </footer>
 </div>
 
+<div class="modal-overlay" id="modalOverlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+
+    <div class="modal-panel" data-panel="signin">
+      <div class="eyebrow">// welcome back</div>
+      <h3 id="modalTitle">Sign in to SkillBridge</h3>
+      <form class="modal-form" data-form="signin">
+        <label>Email<input type="email" required placeholder="you@college.edu"></label>
+        <label>Password<input type="password" required placeholder="••••••••"></label>
+        <button type="submit" class="btn btn-primary modal-submit">Sign In</button>
+      </form>
+      <p class="modal-switch">New here? <a href="#" data-switch="get-started">Get started</a></p>
+    </div>
+
+    <div class="modal-panel" data-panel="get-started">
+      <div class="eyebrow">// join skillbridge</div>
+      <h3>Get started</h3>
+      <div class="role-select">
+        <button type="button" class="role-btn role-green active" data-role="student">Student</button>
+        <button type="button" class="role-btn role-yellow" data-role="college">College</button>
+        <button type="button" class="role-btn role-red" data-role="industry">Industry</button>
+      </div>
+      <form class="modal-form" data-form="get-started">
+        <label>Email<input type="email" required placeholder="you@example.com"></label>
+        <button type="submit" class="btn btn-primary modal-submit">Join the waitlist</button>
+      </form>
+      <p class="modal-switch">Already onboard? <a href="#" data-switch="signin">Sign in</a></p>
+    </div>
+
+    <div class="modal-panel" data-panel="contact">
+      <div class="eyebrow">// get in touch</div>
+      <h3>Contact us</h3>
+      <form class="modal-form" data-form="contact">
+        <label>Name<input type="text" required placeholder="Your name"></label>
+        <label>Email<input type="email" required placeholder="you@example.com"></label>
+        <label>Message<textarea required rows="4" placeholder="How can we help?"></textarea></label>
+        <button type="submit" class="btn btn-primary modal-submit">Send message</button>
+      </form>
+    </div>
+
+    <div class="modal-success" data-success>
+      <div class="modal-success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <h3>You're in!</h3>
+      <p data-success-text>Thanks — we'll be in touch shortly.</p>
+    </div>
+  </div>
+</div>
+
 <script>
-  var stage = document.getElementById('bridgeStage');
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (stage && !reduceMotion && window.matchMedia('(hover:hover)').matches) {
-    document.addEventListener('mousemove', function (e) {
-      var x = (e.clientX / window.innerWidth - 0.5) * 10;
-      var y = (e.clientY / window.innerHeight - 0.5) * 10;
-      stage.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+  var reveals = document.querySelectorAll('.reveal');
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    reveals.forEach(function (el) { el.classList.add('visible'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(function (el) { io.observe(el); });
+  }
+
+  var navToggle = document.getElementById('navToggle');
+  var navLinksEl = document.getElementById('navLinks');
+  if (navToggle && navLinksEl) {
+    navToggle.addEventListener('click', function () {
+      var isOpen = navLinksEl.classList.toggle('open');
+      navToggle.classList.toggle('open', isOpen);
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    navLinksEl.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        navLinksEl.classList.remove('open');
+        navToggle.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  var navAnchors = document.querySelectorAll('.nav-links a[data-nav]');
+  var sectionMap = {};
+  navAnchors.forEach(function (a) {
+    var key = a.getAttribute('data-nav');
+    if (key !== 'home') {
+      var sec = document.getElementById(key);
+      if (sec) sectionMap[key] = sec;
+    }
+  });
+  if ('IntersectionObserver' in window && Object.keys(sectionMap).length) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          navAnchors.forEach(function (a) { a.classList.remove('active'); });
+          var link = document.querySelector('.nav-links a[data-nav="' + entry.target.id + '"]');
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    Object.keys(sectionMap).forEach(function (key) { spy.observe(sectionMap[key]); });
+  }
+
+  var modalOverlay = document.getElementById('modalOverlay');
+  if (modalOverlay) {
+    var modalBox = modalOverlay.querySelector('.modal');
+    var modalPanels = modalOverlay.querySelectorAll('.modal-panel');
+    var modalSuccess = modalOverlay.querySelector('[data-success]');
+    var modalSuccessText = modalOverlay.querySelector('[data-success-text]');
+    var lastFocused = null;
+
+    var successMessages = {
+      signin: "Welcome back — you're signed in.",
+      'get-started': "You're on the list — we'll email you when your access is ready.",
+      contact: "Thanks — we'll get back to you shortly."
+    };
+
+    function showModalPanel(name) {
+      modalSuccess.classList.remove('active');
+      modalPanels.forEach(function (p) {
+        p.classList.toggle('active', p.getAttribute('data-panel') === name);
+      });
+    }
+
+    function openModal(name) {
+      lastFocused = document.activeElement;
+      showModalPanel(name);
+      modalOverlay.classList.add('open');
+      modalOverlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      setTimeout(function () {
+        var firstField = modalOverlay.querySelector('.modal-panel.active input, .modal-panel.active textarea');
+        if (firstField) firstField.focus();
+      }, 260);
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('open');
+      modalOverlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+
+    document.querySelectorAll('[data-modal]').forEach(function (trigger) {
+      trigger.addEventListener('click', function (e) {
+        e.preventDefault();
+        openModal(trigger.getAttribute('data-modal'));
+      });
+    });
+
+    modalOverlay.querySelectorAll('[data-switch]').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        showModalPanel(link.getAttribute('data-switch'));
+      });
+    });
+
+    modalOverlay.querySelectorAll('.role-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        modalOverlay.querySelectorAll('.role-btn').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+      });
+    });
+
+    modalOverlay.querySelectorAll('form[data-form]').forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var kind = form.getAttribute('data-form');
+        modalSuccessText.textContent = successMessages[kind] || "Thanks — we'll be in touch.";
+        modalPanels.forEach(function (p) { p.classList.remove('active'); });
+        modalSuccess.classList.add('active');
+        form.reset();
+      });
+    });
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', function (e) {
+      if (e.target === modalOverlay) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
     });
   }
 </script>
+
+
 
 </body>
 </html>
