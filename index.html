@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -132,11 +133,15 @@
     font-family:var(--font-m); font-size:0.76rem; font-weight:500;
     padding:6px 13px; border-radius:999px; border:1px solid var(--border);
     background:var(--panel); display:inline-flex; align-items:center; gap:7px; color:var(--muted);
+    transition:border-color .2s var(--ease), box-shadow .2s var(--ease), transform .2s var(--ease-pop);
   }
   .tag .sw{ width:8px; height:8px; border-radius:50%; }
   .tag.tg .sw{ background:var(--tag-green); } .tag.tg{ color:var(--tag-green); border-color:rgba(0,184,163,0.3); }
   .tag.ty .sw{ background:var(--tag-yellow); } .tag.ty{ color:var(--tag-yellow); border-color:rgba(255,192,30,0.3); }
   .tag.tr .sw{ background:var(--tag-red); } .tag.tr{ color:var(--tag-red); border-color:rgba(255,55,95,0.3); }
+  .tag.tg:hover{ box-shadow:0 0 0 3px rgba(0,184,163,0.14); transform:translateY(-1px); }
+  .tag.ty:hover{ box-shadow:0 0 0 3px rgba(255,192,30,0.14); transform:translateY(-1px); }
+  .tag.tr:hover{ box-shadow:0 0 0 3px rgba(255,55,95,0.14); transform:translateY(-1px); }
 
   .hero h1{
     font-family:var(--font-d); font-weight:600; font-size:clamp(2.4rem,4.6vw,3.6rem);
@@ -146,6 +151,21 @@
     background:linear-gradient(100deg, #ffb236 10%, var(--brand) 55%, #ff8a3d 90%);
     -webkit-background-clip:text; background-clip:text; color:transparent;
     filter:drop-shadow(0 0 22px rgba(255,161,22,0.28));
+  }
+  .hero h1 .role-student{
+    background:linear-gradient(100deg, #4be0cc 10%, var(--tag-green) 55%, #00d9c2 90%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 22px rgba(0,184,163,0.3));
+  }
+  .hero h1 .role-college{
+    background:linear-gradient(100deg, #ffd766 10%, var(--tag-yellow) 55%, #ffb100 90%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 22px rgba(255,192,30,0.3));
+  }
+  .hero h1 .role-recruiter{
+    background:linear-gradient(100deg, #ff7d9d 10%, var(--tag-red) 55%, #ff375f 90%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 22px rgba(255,55,95,0.3));
   }
   .hero p.lede{ font-size:1.04rem; line-height:1.65; color:var(--muted); max-width:480px; margin:0 0 30px; }
   .hero-actions{ display:flex; gap:12px; flex-wrap:wrap; justify-content:flex-start; }
@@ -452,8 +472,8 @@
     <ul class="nav-links" id="navLinks">
       <li><a href="#" class="active" data-nav="home">Home</a></li>
       <li><a href="#about" data-nav="about">About</a></li>
-      <li><a href="#how" data-nav="how">How it Works</a></li>
       <li><a href="#features" data-nav="features">Features</a></li>
+      <li><a href="#how" data-nav="how">How it Works</a></li>
       <li><a href="#proof" data-nav="proof">Proof</a></li>
       <li><a href="#contact" data-nav="contact">Contact</a></li>
     </ul>
@@ -470,7 +490,7 @@
     <div class="hero-copy">
       <div class="eyebrow">// connecting three worlds</div>
 
-      <h1>Bridging Students,<br><span class="accent-text">Colleges &amp; Recruiters</span><br>Together</h1>
+      <h1>Bridging <span class="role-student">Students</span>,<br><span class="role-college">Colleges</span> &amp; <span class="role-recruiter">Recruiters</span><br>Together</h1>
       <p class="lede">One network where talent, education and opportunity meet — so students grow, colleges empower, and recruiters discover what's next.</p>
 
       <div class="tag-row">
@@ -971,8 +991,5 @@
     });
   }
 </script>
-
-
-
 </body>
 </html>
