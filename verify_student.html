@@ -159,14 +159,6 @@
   .verify-help{ margin:10px 0 0; text-align:center; font-size:0.8rem; color:var(--muted); }
   .verify-help a{ color:var(--brand); text-decoration:underline; text-underline-offset:2px; }
 
-  .verify-trust{
-    display:flex; align-items:center; gap:10px; margin-bottom:22px; padding:11px 14px;
-    border:1px solid var(--border); border-radius:12px; background:var(--bg);
-    font-size:0.82rem; color:var(--muted);
-  }
-  .verify-trust svg{ flex:none; width:17px; height:17px; color:var(--tag-green); }
-  .verify-trust strong{ color:var(--ink); }
-
   .field-wrap{ position:relative; }
   .field-wrap input{ padding-right:40px; }
   .field-status{
@@ -310,10 +302,6 @@
 
     <div class="verify-card" id="verifyCard">
       <div class="verify-panel active" data-panel="form">
-        <div class="verify-trust">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
-          <span><strong>18,400+</strong> students verified so far</span>
-        </div>
         <form class="verify-form" id="verifyForm">
           <label>State
             <select id="fState" required>
