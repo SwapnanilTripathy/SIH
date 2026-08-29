@@ -156,6 +156,49 @@
     background:none; border:none; padding:0; color:var(--brand); font-family:var(--font-b);
     font-size:0.8rem; text-decoration:underline; text-underline-offset:2px; cursor:pointer;
   }
+  .verify-help{ margin:10px 0 0; text-align:center; font-size:0.8rem; color:var(--muted); }
+  .verify-help a{ color:var(--brand); text-decoration:underline; text-underline-offset:2px; }
+
+  .verify-trust{
+    display:flex; align-items:center; gap:10px; margin-bottom:22px; padding:11px 14px;
+    border:1px solid var(--border); border-radius:12px; background:var(--bg);
+    font-size:0.82rem; color:var(--muted);
+  }
+  .verify-trust svg{ flex:none; width:17px; height:17px; color:var(--tag-green); }
+  .verify-trust strong{ color:var(--ink); }
+
+  .field-wrap{ position:relative; }
+  .field-wrap input{ padding-right:40px; }
+  .field-status{
+    position:absolute; right:11px; top:50%; transform:translateY(-50%);
+    width:18px; height:18px; border-radius:50%; display:none; align-items:center; justify-content:center;
+  }
+  .field-status.ok{ display:flex; background:rgba(0,184,163,0.18); color:var(--tag-green); }
+  .field-status.warn{ display:flex; background:rgba(255,192,30,0.18); color:var(--tag-yellow); }
+  .field-status svg{ width:11px; height:11px; }
+  .field-hint{
+    display:block; margin-top:6px; font-size:0.74rem; text-transform:none; letter-spacing:0; color:var(--tag-green);
+  }
+  .field-hint.warn{ color:var(--tag-yellow); }
+
+  .verify-divider{ display:flex; align-items:center; gap:12px; margin:18px 0 14px; color:var(--muted); font-size:0.78rem; }
+  .verify-divider::before, .verify-divider::after{ content:''; flex:1; height:1px; background:var(--border); }
+  .id-upload-btn{
+    display:block; width:100%; text-align:center; padding:11px 16px; border-radius:10px;
+    border:1px dashed var(--border); color:var(--muted); font-size:0.86rem; font-family:var(--font-b);
+    cursor:pointer; transition:border-color .2s var(--ease), color .2s var(--ease), background .2s var(--ease);
+  }
+  .id-upload-btn:hover{ border-color:var(--brand); color:var(--brand); background:rgba(255,161,22,0.06); }
+  .verify-result-icon.pending{ background:rgba(255,192,30,0.14); border:1px solid rgba(255,192,30,0.4); color:var(--tag-yellow); }
+
+  .confetti-piece{
+    position:fixed; width:6px; height:10px; opacity:0; pointer-events:none; z-index:999;
+    border-radius:1px; animation:confettiFall .9s ease-out forwards;
+  }
+  @keyframes confettiFall{
+    0%{ transform:translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--tx), var(--ty)) rotate(var(--rot)); opacity:0; }
+  }
 
   @keyframes spin{ to{ transform:rotate(360deg); } }
   .verify-panel[data-panel="checking"]{ text-align:left; padding:8px 2px 4px; }
@@ -215,6 +258,7 @@
 
   @media (prefers-reduced-motion: reduce){
     .verify-head, .verify-card, .verify-panel{ animation:none !important; transition:none !important; opacity:1 !important; transform:none !important; }
+    .confetti-piece{ display:none !important; }
   }
 
   /* ---------- footer ---------- */
@@ -266,6 +310,10 @@
 
     <div class="verify-card" id="verifyCard">
       <div class="verify-panel active" data-panel="form">
+        <div class="verify-trust">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+          <span><strong>18,400+</strong> students verified so far</span>
+        </div>
         <form class="verify-form" id="verifyForm">
           <label>State
             <select id="fState" required>
@@ -317,7 +365,11 @@
             <input type="text" id="fRoll" required placeholder="e.g. ASH21CS104" autocomplete="off">
           </label>
           <label>College email
-            <input type="email" id="fEmail" required placeholder="you@college.edu">
+            <div class="field-wrap">
+              <input type="email" id="fEmail" required placeholder="you@college.edu">
+              <span class="field-status" id="emailStatus"></span>
+            </div>
+            <span class="field-hint" id="emailHint"></span>
           </label>
           <label>Phone number
             <div class="phone-field">
@@ -372,6 +424,21 @@
         <h3>We couldn't verify that</h3>
         <p class="verify-result-sub">No enrolled record matches that roll number under the selected college. Double-check the details, or ask your placement cell to add you.</p>
         <button type="button" class="btn btn-primary" data-action="reset">Try again</button>
+        <div class="verify-divider"><span>or</span></div>
+        <label class="id-upload-btn">
+          Upload your student ID card instead
+          <input type="file" id="idUpload" accept="image/*,.pdf" hidden>
+        </label>
+        <p class="verify-help">Still stuck? <a href="mailto:support@skillbridge.io">Contact your placement cell</a></p>
+      </div>
+
+      <div class="verify-panel" data-panel="pending">
+        <div class="verify-result-icon pending">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        </div>
+        <h3>Under review</h3>
+        <p class="verify-result-sub">We've received <strong id="pendingFileName">your ID card</strong> for manual review. This usually takes 24–48 hours — we'll email you once it's approved.</p>
+        <button type="button" class="btn btn-primary" data-action="reset">Back to form</button>
       </div>
     </div>
 
@@ -395,14 +462,52 @@
 <script>
   // Sample "enrolled student" records — demo data only, no real backend.
   var STUDENT_RECORDS = [
-    { state: "Maharashtra", college: "Ashgrove Institute of Technology", roll: "ASH21CS104", name: "Aarav Menon", batch: "B.Tech CSE · 2026" },
-    { state: "Karnataka", college: "Meridian College of Engineering", roll: "MER22EC088", name: "Priya Nair", batch: "B.Tech ECE · 2027" },
-    { state: "Tamil Nadu", college: "Kestrel University", roll: "KES20ME019", name: "Devansh Rao", batch: "B.Tech ME · 2025" },
-    { state: "Delhi (NCT)", college: "Norwood Polytechnic", roll: "NOR23IT051", name: "Sana Iyer", batch: "Diploma IT · 2026" }
+    { state: "Maharashtra", college: "Ashgrove Institute of Technology", roll: "ASH21CS104", name: "Aarav Menon", batch: "B.Tech CSE · 2026", domain: "ashgrove.edu.in" },
+    { state: "Karnataka", college: "Meridian College of Engineering", roll: "MER22EC088", name: "Priya Nair", batch: "B.Tech ECE · 2027", domain: "meridian.edu.in" },
+    { state: "Tamil Nadu", college: "Kestrel University", roll: "KES20ME019", name: "Devansh Rao", batch: "B.Tech ME · 2025", domain: "kestrel.edu.in" },
+    { state: "Delhi (NCT)", college: "Norwood Polytechnic", roll: "NOR23IT051", name: "Sana Iyer", batch: "Diploma IT · 2026", domain: "norwood.edu.in" }
   ];
 
   var fState = document.getElementById('fState');
   var fCollege = document.getElementById('fCollege');
+  var fEmail = document.getElementById('fEmail');
+  var ICON_CHECK_SM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+  var ICON_WARN_SM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"/><path d="M12 16.5v.01"/></svg>';
+
+  function collegeDomain(collegeName) {
+    var rec = STUDENT_RECORDS.find(function (r) { return r.college === collegeName; });
+    return rec ? rec.domain : null;
+  }
+
+  function checkEmailMatch() {
+    var emailStatus = document.getElementById('emailStatus');
+    var emailHint = document.getElementById('emailHint');
+    var email = fEmail.value.trim().toLowerCase();
+    var domain = collegeDomain(fCollege.value);
+
+    if (!domain || email.indexOf('@') === -1) {
+      emailStatus.className = 'field-status';
+      emailStatus.innerHTML = '';
+      emailHint.className = 'field-hint';
+      emailHint.textContent = '';
+      return;
+    }
+    var atDomain = email.split('@')[1];
+    if (atDomain === domain) {
+      emailStatus.className = 'field-status ok';
+      emailStatus.innerHTML = ICON_CHECK_SM;
+      emailHint.className = 'field-hint';
+      emailHint.textContent = "Matches your college's domain";
+    } else {
+      emailStatus.className = 'field-status warn';
+      emailStatus.innerHTML = ICON_WARN_SM;
+      emailHint.className = 'field-hint warn';
+      emailHint.textContent = "Doesn't look like a @" + domain + " address — you can still continue";
+    }
+  }
+
+  fEmail.addEventListener('input', checkEmailMatch);
+  fCollege.addEventListener('change', checkEmailMatch);
 
   fState.addEventListener('change', function () {
     var matches = STUDENT_RECORDS.filter(function (r) { return r.state === fState.value; });
@@ -429,6 +534,28 @@
 
   var card = document.getElementById('verifyCard');
   var panels = card.querySelectorAll('.verify-panel');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function burstConfetti(originEl) {
+    if (reduceMotion || !originEl) return;
+    var rect = originEl.getBoundingClientRect();
+    var colors = ['#ffa116', '#00b8a3', '#ffc01e', '#ff375f', '#4be0cc'];
+    for (var i = 0; i < 26; i++) {
+      var piece = document.createElement('span');
+      piece.className = 'confetti-piece';
+      var angle = Math.random() * Math.PI * 2;
+      var dist = 60 + Math.random() * 90;
+      piece.style.setProperty('--tx', (Math.cos(angle) * dist) + 'px');
+      piece.style.setProperty('--ty', (Math.sin(angle) * dist - 30) + 'px');
+      piece.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg');
+      piece.style.left = (rect.left + rect.width / 2) + 'px';
+      piece.style.top = (rect.top + rect.height / 2) + 'px';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDelay = (Math.random() * 0.12) + 's';
+      document.body.appendChild(piece);
+      (function (p) { setTimeout(function () { p.remove(); }, 1100); })(piece);
+    }
+  }
 
   function crossfadeTo(name) {
     var target = card.querySelector('.verify-panel[data-panel="' + name + '"]');
@@ -457,8 +584,9 @@
     fState.dispatchEvent(new Event('change'));
     document.getElementById('fCollege').value = sample.college;
     document.getElementById('fRoll').value = sample.roll;
-    document.getElementById('fEmail').value = sample.name.toLowerCase().replace(' ', '.') + '@student.edu';
+    document.getElementById('fEmail').value = sample.name.toLowerCase().replace(' ', '.') + '@' + sample.domain;
     document.getElementById('fPhone').value = '9' + Math.floor(100000000 + Math.random() * 899999999);
+    checkEmailMatch();
   });
 
   var ICON_DOT = '<span class="v-step-dot"></span>';
@@ -494,6 +622,9 @@
               document.getElementById('resCollege').textContent = match.college;
               document.getElementById('resBatch').textContent = match.batch;
               crossfadeTo('success');
+              setTimeout(function () {
+                burstConfetti(card.querySelector('.verify-result-icon.good'));
+              }, 180);
             }, 500);
           }, 650);
         } else {
@@ -528,7 +659,21 @@
     });
   });
 
+  document.getElementById('idUpload').addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    document.getElementById('pendingFileName').textContent = file ? file.name : 'your ID card';
+    crossfadeTo('pending');
+  });
+
   document.getElementById('continueBtn').addEventListener('click', function () {
+    var match = {
+      name: document.getElementById('resName').textContent,
+      college: document.getElementById('resCollege').textContent,
+      batch: document.getElementById('resBatch').textContent
+    };
+    try {
+      localStorage.setItem('sb_verified', JSON.stringify(match));
+    } catch (e) { /* storage unavailable — continue anyway */ }
     window.location.href = 'index.html';
   });
 </script>
