@@ -157,13 +157,31 @@
     font-size:0.8rem; text-decoration:underline; text-underline-offset:2px; cursor:pointer;
   }
 
-  .verify-panel[data-panel="checking"]{ text-align:center; padding:12px 0; }
-  .verify-spinner{
-    width:32px; height:32px; border-radius:50%; border:3px solid var(--border);
-    border-top-color:var(--brand); margin:0 auto 18px; animation:spin .8s linear infinite;
-  }
   @keyframes spin{ to{ transform:rotate(360deg); } }
-  .verify-status-text{ font-size:0.92rem; color:var(--muted); margin:0; }
+  .verify-panel[data-panel="checking"]{ text-align:left; padding:8px 2px 4px; }
+  .verify-steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+  .v-step{ display:flex; align-items:center; gap:13px; padding:12px 4px; opacity:0.42; transition:opacity .25s var(--ease); }
+  .v-step.active, .v-step.done, .v-step.fail{ opacity:1; }
+  .v-step-icon{
+    flex:none; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    border:1.5px solid var(--border); background:var(--bg); color:var(--muted);
+  }
+  .v-step.active .v-step-icon{ border-color:var(--brand); }
+  .v-step.done .v-step-icon{ border-color:var(--tag-green); background:rgba(0,184,163,0.16); color:var(--tag-green); animation:stepPop .3s var(--ease-pop); }
+  .v-step.fail .v-step-icon{ border-color:var(--tag-red); background:rgba(255,55,95,0.14); color:var(--tag-red); animation:stepPop .3s var(--ease-pop); }
+  .v-step-icon svg{ width:13px; height:13px; }
+  .v-step-dot{ width:6px; height:6px; border-radius:50%; background:var(--muted); }
+  .v-spinner-sm{ width:14px; height:14px; border-radius:50%; border:2px solid var(--border); border-top-color:var(--brand); animation:spin .7s linear infinite; }
+  .v-step-text{ font-size:0.9rem; color:var(--muted); }
+  .v-step.active .v-step-text, .v-step.done .v-step-text, .v-step.fail .v-step-text{ color:var(--ink); }
+  @keyframes stepPop{ 0%{ transform:scale(0.4); opacity:0; } 65%{ transform:scale(1.15); } 100%{ transform:scale(1); opacity:1; } }
+
+  .verify-privacy-note{
+    display:flex; align-items:flex-start; gap:9px; width:100%; margin:18px 0 0;
+    font-size:0.78rem; line-height:1.5; color:var(--muted); text-align:left;
+    padding:13px 15px; border:1px solid var(--border); border-radius:12px; background:var(--panel);
+  }
+  .verify-privacy-note svg{ flex:none; width:15px; height:15px; margin-top:1px; color:var(--brand); }
 
   .verify-panel[data-panel="success"], .verify-panel[data-panel="notfound"]{ text-align:center; }
   .verify-result-icon{
@@ -316,8 +334,20 @@
       </div>
 
       <div class="verify-panel" data-panel="checking">
-        <div class="verify-spinner"></div>
-        <p class="verify-status-text">Checking with <span id="checkingCollege">your college</span>…</p>
+        <ul class="verify-steps" id="verifySteps">
+          <li class="v-step" data-step="0">
+            <span class="v-step-icon"><span class="v-step-dot"></span></span>
+            <span class="v-step-text">Student details matched</span>
+          </li>
+          <li class="v-step" data-step="1">
+            <span class="v-step-icon"><span class="v-step-dot"></span></span>
+            <span class="v-step-text">College matched — <span id="checkingCollege">your college</span></span>
+          </li>
+          <li class="v-step" data-step="2">
+            <span class="v-step-icon"><span class="v-step-dot"></span></span>
+            <span class="v-step-text">You are verified</span>
+          </li>
+        </ul>
       </div>
 
       <div class="verify-panel" data-panel="success">
@@ -344,6 +374,11 @@
         <button type="button" class="btn btn-primary" data-action="reset">Try again</button>
       </div>
     </div>
+
+    <p class="verify-privacy-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      Due to our privacy policy, your data will not be made public — it's used only to verify your student status.
+    </p>
   </section>
 
   <footer class="footer">
@@ -426,27 +461,61 @@
     document.getElementById('fPhone').value = '9' + Math.floor(100000000 + Math.random() * 899999999);
   });
 
+  var ICON_DOT = '<span class="v-step-dot"></span>';
+  var ICON_SPINNER = '<span class="v-spinner-sm"></span>';
+  var ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+  var ICON_CROSS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+  var stepEls = document.querySelectorAll('#verifySteps .v-step');
+
+  function stepIcon(i) { return stepEls[i].querySelector('.v-step-icon'); }
+  function resetSteps() {
+    stepEls.forEach(function (s) {
+      s.classList.remove('active', 'done', 'fail');
+      s.querySelector('.v-step-icon').innerHTML = ICON_DOT;
+    });
+  }
+  function setActive(i) { stepEls[i].classList.add('active'); stepIcon(i).innerHTML = ICON_SPINNER; }
+  function setDone(i) { stepEls[i].classList.remove('active'); stepEls[i].classList.add('done'); stepIcon(i).innerHTML = ICON_CHECK; }
+  function setFail(i) { stepEls[i].classList.remove('active'); stepEls[i].classList.add('fail'); stepIcon(i).innerHTML = ICON_CROSS; }
+
+  function runSteps(match) {
+    setActive(0);
+    setTimeout(function () {
+      setDone(0);
+      setActive(1);
+      setTimeout(function () {
+        if (match) {
+          setDone(1);
+          setActive(2);
+          setTimeout(function () {
+            setDone(2);
+            setTimeout(function () {
+              document.getElementById('resName').textContent = match.name;
+              document.getElementById('resCollege').textContent = match.college;
+              document.getElementById('resBatch').textContent = match.batch;
+              crossfadeTo('success');
+            }, 500);
+          }, 650);
+        } else {
+          setFail(1);
+          setTimeout(function () { crossfadeTo('notfound'); }, 750);
+        }
+      }, 750);
+    }, 650);
+  }
+
   document.getElementById('verifyForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var college = document.getElementById('fCollege').value;
     var roll = document.getElementById('fRoll').value.trim().toUpperCase();
+    var match = STUDENT_RECORDS.find(function (r) {
+      return r.college === college && r.roll.toUpperCase() === roll;
+    });
 
     document.getElementById('checkingCollege').textContent = college || 'your college';
+    resetSteps();
     crossfadeTo('checking');
-
-    setTimeout(function () {
-      var match = STUDENT_RECORDS.find(function (r) {
-        return r.college === college && r.roll.toUpperCase() === roll;
-      });
-      if (match) {
-        document.getElementById('resName').textContent = match.name;
-        document.getElementById('resCollege').textContent = match.college;
-        document.getElementById('resBatch').textContent = match.batch;
-        crossfadeTo('success');
-      } else {
-        crossfadeTo('notfound');
-      }
-    }, 1100);
+    runSteps(match);
   });
 
   card.querySelectorAll('[data-action="reset"]').forEach(function (btn) {
@@ -454,6 +523,7 @@
       document.getElementById('verifyForm').reset();
       fCollege.disabled = true;
       fCollege.innerHTML = '<option value="" disabled selected>Select a state first</option>';
+      resetSteps();
       crossfadeTo('form');
     });
   });
