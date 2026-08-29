@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillBridge — Verify Student Status</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ffa116'/%3E%3Cg fill='none' stroke='%231a1a1a' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 40 L14 26 M50 40 L50 26'/%3E%3Cpath d='M14 26 C24 6, 40 6, 50 26'/%3E%3Cline x1='9' y1='40' x2='55' y2='40'/%3E%3Cline x1='24' y1='28' x2='24' y2='40'/%3E%3Cline x1='32' y1='20' x2='32' y2='40'/%3E%3Cline x1='40' y1='28' x2='40' y2='40'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:      #1a1a1a;
+    --panel:   #262626;
+    --panel-2: #2d2d2d;
+    --border:  #363636;
+    --ink:     #eff1f6;
+    --muted:   #97979c;
+    --brand:   #ffa116;
+    --brand-dim: #cc8012;
+    --tag-green:  #00b8a3;
+    --tag-yellow: #ffc01e;
+    --tag-red:    #ff375f;
+    --font-d: 'Fraunces', serif;
+    --font-b: 'IBM Plex Sans', sans-serif;
+    --font-m: 'IBM Plex Mono', monospace;
+    --ease: cubic-bezier(.16,.84,.44,1);
+    --ease-pop: cubic-bezier(.34,1.56,.64,1);
+    --card-shadow: 0 10px 30px -22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.045);
+    --card-shadow-hover: 0 16px 36px -18px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-b);
+    overflow-x:hidden; -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; text-decoration:none; }
+  svg,img{ display:block; max-width:100%; }
+
+  .glow{ position:fixed; width:640px; height:640px; top:-280px; right:-220px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,161,22,0.13), transparent 70%);
+    filter:blur(90px); pointer-events:none; z-index:0; }
+  .glow-2{ position:fixed; width:520px; height:520px; bottom:-260px; left:-180px; border-radius:50%;
+    background:radial-gradient(circle, rgba(204,128,18,0.10), transparent 70%);
+    filter:blur(90px); pointer-events:none; z-index:0; }
+  .grain{
+    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.035; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .page{ position:relative; z-index:2; min-height:100vh; display:flex; flex-direction:column; }
+
+  .top-accent{ position:fixed; top:0; left:0; right:0; height:3px; z-index:50;
+    background:linear-gradient(90deg, transparent, var(--brand), transparent); opacity:0.8; }
+
+  /* ---------- nav ---------- */
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px clamp(20px,5vw,64px);
+    position:sticky; top:0; z-index:40;
+    background:rgba(26,26,26,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .logo{ font-family:var(--font-d); font-weight:700; font-size:1.25rem; display:flex; align-items:center; gap:9px; }
+  .logo .mark{
+    width:30px; height:30px; border-radius:8px; background:var(--brand);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px -4px rgba(255,161,22,0.6);
+    transition:transform .25s var(--ease-pop);
+  }
+  .logo:hover .mark{ transform:rotate(-6deg) scale(1.06); }
+  .logo .accent{ color:var(--brand); }
+  .back-link{
+    display:inline-flex; align-items:center; gap:7px; font-size:0.88rem; color:var(--muted);
+    transition:color .2s var(--ease);
+  }
+  .back-link:hover{ color:var(--ink); }
+  .back-link svg{ width:15px; height:15px; }
+
+  .btn{
+    font-family:var(--font-b); font-weight:600; font-size:0.9rem;
+    padding:11px 22px; border-radius:10px; border:1px solid transparent; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    transition:transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease);
+  }
+  .btn:active{ transform:scale(0.97); }
+  .btn-primary{
+    background:linear-gradient(135deg, #ffb03d, var(--brand) 60%, #f0900a);
+    color:#1a1a1a; box-shadow:0 6px 20px -6px rgba(255,161,22,0.55);
+  }
+  .btn-primary:hover{ box-shadow:0 8px 26px -6px rgba(255,161,22,0.75); transform:translateY(-1px); }
+  .btn svg{ width:15px; height:15px; }
+
+  .eyebrow{
+    font-family:var(--font-m); font-size:0.74rem; font-weight:600;
+    color:var(--brand); text-transform:uppercase; letter-spacing:0.08em;
+    display:inline-block; margin-bottom:14px;
+  }
+  .accent-text{
+    background:linear-gradient(100deg, #ffb236 10%, var(--brand) 55%, #ff8a3d 90%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+
+  /* ---------- verify page ---------- */
+  .verify-wrap{
+    max-width:480px; margin:0 auto; flex:1; width:100%;
+    padding:clamp(48px,8vh,88px) clamp(20px,5vw,64px) clamp(60px,9vh,100px);
+    display:flex; flex-direction:column;
+  }
+  .verify-head{ text-align:center; margin-bottom:30px; }
+  .verify-head h1{
+    font-family:var(--font-d); font-weight:600; font-size:clamp(1.9rem,3.6vw,2.4rem);
+    line-height:1.15; letter-spacing:-0.005em; margin:0 0 14px; color:var(--ink);
+  }
+  .verify-head p{ font-size:0.98rem; line-height:1.6; color:var(--muted); margin:0; }
+
+  .verify-card{
+    background:linear-gradient(165deg, var(--panel), var(--panel-2)); border:1px solid var(--border);
+    border-radius:20px; padding:clamp(26px,4vw,34px); box-shadow:var(--card-shadow);
+  }
+
+  .verify-panel{ display:none; opacity:1; transform:none; transition:opacity .18s var(--ease), transform .18s var(--ease); }
+  .verify-panel.active{ display:block; }
+  .verify-panel.leaving{ opacity:0; transform:translateY(-4px); }
+  .verify-panel.entering{ opacity:0; transform:translateY(6px); }
+
+  .verify-form label{
+    display:block; margin-bottom:16px; font-family:var(--font-m); font-size:0.7rem;
+    text-transform:uppercase; letter-spacing:0.06em; color:var(--muted);
+  }
+  .verify-form select, .verify-form input{
+    display:block; width:100%; margin-top:8px; padding:11px 14px; border-radius:10px;
+    border:1px solid var(--border); background:var(--bg); color:var(--ink);
+    font-family:var(--font-b); font-size:0.92rem;
+    transition:border-color .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .verify-form select:focus, .verify-form input:focus{
+    outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(255,161,22,0.15);
+  }
+  .verify-form select{ appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2397979c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center; background-size:16px; padding-right:38px;
+  }
+  .verify-form select[disabled]{ opacity:0.5; cursor:not-allowed; }
+  .phone-field{ display:flex; gap:8px; margin-top:8px; }
+  .phone-code{
+    flex:none; display:flex; align-items:center; padding:0 12px;
+    border:1px solid var(--border); border-radius:10px; background:var(--panel-2);
+    font-family:var(--font-b); font-size:0.92rem; color:var(--muted);
+  }
+  .phone-field input{ flex:1; min-width:0; margin-top:0; }
+  .verify-submit{ width:100%; margin-top:6px; }
+  .verify-hint{ margin:16px 0 0; text-align:center; font-size:0.8rem; color:var(--muted); }
+  .verify-hint button{
+    background:none; border:none; padding:0; color:var(--brand); font-family:var(--font-b);
+    font-size:0.8rem; text-decoration:underline; text-underline-offset:2px; cursor:pointer;
+  }
+
+  .verify-panel[data-panel="checking"]{ text-align:center; padding:12px 0; }
+  .verify-spinner{
+    width:32px; height:32px; border-radius:50%; border:3px solid var(--border);
+    border-top-color:var(--brand); margin:0 auto 18px; animation:spin .8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .verify-status-text{ font-size:0.92rem; color:var(--muted); margin:0; }
+
+  .verify-panel[data-panel="success"], .verify-panel[data-panel="notfound"]{ text-align:center; }
+  .verify-result-icon{
+    width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    margin:0 auto 18px;
+  }
+  .verify-result-icon.good{ background:rgba(0,184,163,0.16); border:1px solid rgba(0,184,163,0.4); color:var(--tag-green); }
+  .verify-result-icon.bad{ background:rgba(255,55,95,0.14); border:1px solid rgba(255,55,95,0.4); color:var(--tag-red); }
+  .verify-panel h3{ font-family:var(--font-d); font-weight:600; font-size:1.25rem; margin:0 0 8px; color:var(--ink); }
+  .verify-result-sub{
+    font-size:0.9rem; line-height:1.55; color:var(--muted); margin:0 auto 22px; max-width:340px;
+  }
+  .verify-detail-rows{
+    background:var(--bg); border:1px solid var(--border); border-radius:14px;
+    padding:4px 16px; margin-bottom:22px; text-align:left;
+  }
+  .verify-detail-row{ display:flex; justify-content:space-between; align-items:center; padding:12px 0; font-size:0.88rem; }
+  .verify-detail-row + .verify-detail-row{ border-top:1px solid var(--border); }
+  .verify-detail-row span{ color:var(--muted); }
+  .verify-detail-row strong{ color:var(--ink); font-weight:600; }
+  .verify-panel[data-panel="success"] .btn, .verify-panel[data-panel="notfound"] .btn{ width:100%; }
+  .verify-retry{
+    display:block; margin:14px auto 0; background:none; border:none; color:var(--muted);
+    font-family:var(--font-b); font-size:0.84rem; text-decoration:underline; text-underline-offset:2px; cursor:pointer;
+  }
+  .verify-retry:hover{ color:var(--ink); }
+
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
+  .verify-head, .verify-card{ opacity:0; animation:fadeUp .7s var(--ease) forwards; }
+  .verify-card{ animation-delay:.12s; }
+
+  @media (prefers-reduced-motion: reduce){
+    .verify-head, .verify-card, .verify-panel{ animation:none !important; transition:none !important; opacity:1 !important; transform:none !important; }
+  }
+
+  /* ---------- footer ---------- */
+  .footer{
+    position:relative; padding:22px clamp(20px,5vw,64px);
+    color:var(--muted); font-size:0.82rem;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px 24px;
+    border-top:1px solid var(--border);
+  }
+  .footer-legal{ display:flex; gap:18px; flex-wrap:wrap; }
+  .footer-legal a{ color:var(--muted); transition:color .2s var(--ease); }
+  .footer-legal a:hover{ color:var(--brand); }
+</style>
+</head>
+<body>
+
+<div class="top-accent"></div>
+<div class="glow"></div>
+<div class="glow-2"></div>
+<div class="grain"></div>
+
+<div class="page">
+  <nav class="nav">
+    <a class="logo" href="index.html">
+      <span class="mark">
+        <svg viewBox="0 0 26 22" width="17" height="14" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 15 L2 9 M24 15 L24 9"/>
+          <path d="M2 9 C 9 -1 17 -1 24 9"/>
+          <line x1="0" y1="15" x2="26" y2="15"/>
+          <line x1="7" y1="10" x2="7" y2="15"/>
+          <line x1="13" y1="7.5" x2="13" y2="15"/>
+          <line x1="19" y1="10" x2="19" y2="15"/>
+        </svg>
+      </span>
+      Skill<span class="accent">Bridge</span>
+    </a>
+    <a class="back-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      Back to home
+    </a>
+  </nav>
+
+  <section class="verify-wrap">
+    <div class="verify-head">
+      <div class="eyebrow">// student verification</div>
+      <h1><span class="accent-text">Verify</span> your student status</h1>
+      <p>Confirm you're a currently enrolled student at a partner college before we unlock verified matches for you.</p>
+    </div>
+
+    <div class="verify-card" id="verifyCard">
+      <div class="verify-panel active" data-panel="form">
+        <form class="verify-form" id="verifyForm">
+          <label>State
+            <select id="fState" required>
+              <option value="" disabled selected>Select your state</option>
+              <option>Andaman and Nicobar Islands</option>
+              <option>Andhra Pradesh</option>
+              <option>Arunachal Pradesh</option>
+              <option>Assam</option>
+              <option>Bihar</option>
+              <option>Chandigarh</option>
+              <option>Chhattisgarh</option>
+              <option>Dadra and Nagar Haveli and Daman and Diu</option>
+              <option>Delhi (NCT)</option>
+              <option>Goa</option>
+              <option>Gujarat</option>
+              <option>Haryana</option>
+              <option>Himachal Pradesh</option>
+              <option>Jammu and Kashmir</option>
+              <option>Jharkhand</option>
+              <option>Karnataka</option>
+              <option>Kerala</option>
+              <option>Ladakh</option>
+              <option>Lakshadweep</option>
+              <option>Madhya Pradesh</option>
+              <option>Maharashtra</option>
+              <option>Manipur</option>
+              <option>Meghalaya</option>
+              <option>Mizoram</option>
+              <option>Nagaland</option>
+              <option>Odisha</option>
+              <option>Puducherry</option>
+              <option>Punjab</option>
+              <option>Rajasthan</option>
+              <option>Sikkim</option>
+              <option>Tamil Nadu</option>
+              <option>Telangana</option>
+              <option>Tripura</option>
+              <option>Uttar Pradesh</option>
+              <option>Uttarakhand</option>
+              <option>West Bengal</option>
+            </select>
+          </label>
+          <label>College
+            <select id="fCollege" required disabled>
+              <option value="" disabled selected>Select a state first</option>
+            </select>
+          </label>
+          <label>Roll number / Student ID
+            <input type="text" id="fRoll" required placeholder="e.g. ASH21CS104" autocomplete="off">
+          </label>
+          <label>College email
+            <input type="email" id="fEmail" required placeholder="you@college.edu">
+          </label>
+          <label>Phone number
+            <div class="phone-field">
+              <span class="phone-code">+91</span>
+              <input type="tel" id="fPhone" required pattern="[6-9][0-9]{9}" maxlength="10" placeholder="98765 43210">
+            </div>
+          </label>
+          <button type="submit" class="btn btn-primary verify-submit">
+            Verify me
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+        <p class="verify-hint">Just testing it out? <button type="button" id="fillSample">Fill a sample record</button></p>
+      </div>
+
+      <div class="verify-panel" data-panel="checking">
+        <div class="verify-spinner"></div>
+        <p class="verify-status-text">Checking with <span id="checkingCollege">your college</span>…</p>
+      </div>
+
+      <div class="verify-panel" data-panel="success">
+        <div class="verify-result-icon good">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h3>You're verified</h3>
+        <p class="verify-result-sub">This matches an enrolled student record on file.</p>
+        <div class="verify-detail-rows">
+          <div class="verify-detail-row"><span>Name</span><strong id="resName">—</strong></div>
+          <div class="verify-detail-row"><span>College</span><strong id="resCollege">—</strong></div>
+          <div class="verify-detail-row"><span>Batch</span><strong id="resBatch">—</strong></div>
+        </div>
+        <button type="button" class="btn btn-primary" id="continueBtn">Continue to SkillBridge</button>
+        <button type="button" class="verify-retry" data-action="reset">Verify a different student</button>
+      </div>
+
+      <div class="verify-panel" data-panel="notfound">
+        <div class="verify-result-icon bad">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </div>
+        <h3>We couldn't verify that</h3>
+        <p class="verify-result-sub">No enrolled record matches that roll number under the selected college. Double-check the details, or ask your placement cell to add you.</p>
+        <button type="button" class="btn btn-primary" data-action="reset">Try again</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>© 2026 SkillBridge</span>
+    <div class="footer-legal">
+      <a href="legal.html#privacy">Privacy Policy</a>
+      <a href="legal.html#terms">Terms of Service</a>
+      <a href="legal.html#grievance">Grievance Redressal</a>
+    </div>
+    <span>Student records shown here are sample data for demo purposes.</span>
+  </footer>
+</div>
+
+<script>
+  // Sample "enrolled student" records — demo data only, no real backend.
+  var STUDENT_RECORDS = [
+    { state: "Maharashtra", college: "Ashgrove Institute of Technology", roll: "ASH21CS104", name: "Aarav Menon", batch: "B.Tech CSE · 2026" },
+    { state: "Karnataka", college: "Meridian College of Engineering", roll: "MER22EC088", name: "Priya Nair", batch: "B.Tech ECE · 2027" },
+    { state: "Tamil Nadu", college: "Kestrel University", roll: "KES20ME019", name: "Devansh Rao", batch: "B.Tech ME · 2025" },
+    { state: "Delhi (NCT)", college: "Norwood Polytechnic", roll: "NOR23IT051", name: "Sana Iyer", batch: "Diploma IT · 2026" }
+  ];
+
+  var fState = document.getElementById('fState');
+  var fCollege = document.getElementById('fCollege');
+
+  fState.addEventListener('change', function () {
+    var matches = STUDENT_RECORDS.filter(function (r) { return r.state === fState.value; });
+    fCollege.innerHTML = '';
+    if (matches.length) {
+      fCollege.disabled = false;
+      var placeholder = document.createElement('option');
+      placeholder.value = ''; placeholder.disabled = true; placeholder.selected = true;
+      placeholder.textContent = 'Select your college';
+      fCollege.appendChild(placeholder);
+      matches.forEach(function (r) {
+        var opt = document.createElement('option');
+        opt.textContent = r.college;
+        fCollege.appendChild(opt);
+      });
+    } else {
+      fCollege.disabled = true;
+      var none = document.createElement('option');
+      none.value = ''; none.disabled = true; none.selected = true;
+      none.textContent = 'No demo colleges in this state — try Maharashtra, Karnataka, Tamil Nadu or Delhi';
+      fCollege.appendChild(none);
+    }
+  });
+
+  var card = document.getElementById('verifyCard');
+  var panels = card.querySelectorAll('.verify-panel');
+
+  function crossfadeTo(name) {
+    var target = card.querySelector('.verify-panel[data-panel="' + name + '"]');
+    var anyActive = false;
+    panels.forEach(function (p) {
+      if (p !== target && p.classList.contains('active')) {
+        anyActive = true;
+        p.classList.add('leaving');
+      }
+    });
+    setTimeout(function () {
+      panels.forEach(function (p) { if (p !== target) p.classList.remove('active', 'leaving'); });
+      target.classList.add('active');
+      if (anyActive) {
+        target.classList.add('entering');
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { target.classList.remove('entering'); });
+        });
+      }
+    }, anyActive ? 140 : 0);
+  }
+
+  document.getElementById('fillSample').addEventListener('click', function () {
+    var sample = STUDENT_RECORDS[Math.floor(Math.random() * STUDENT_RECORDS.length)];
+    fState.value = sample.state;
+    fState.dispatchEvent(new Event('change'));
+    document.getElementById('fCollege').value = sample.college;
+    document.getElementById('fRoll').value = sample.roll;
+    document.getElementById('fEmail').value = sample.name.toLowerCase().replace(' ', '.') + '@student.edu';
+    document.getElementById('fPhone').value = '9' + Math.floor(100000000 + Math.random() * 899999999);
+  });
+
+  document.getElementById('verifyForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var college = document.getElementById('fCollege').value;
+    var roll = document.getElementById('fRoll').value.trim().toUpperCase();
+
+    document.getElementById('checkingCollege').textContent = college || 'your college';
+    crossfadeTo('checking');
+
+    setTimeout(function () {
+      var match = STUDENT_RECORDS.find(function (r) {
+        return r.college === college && r.roll.toUpperCase() === roll;
+      });
+      if (match) {
+        document.getElementById('resName').textContent = match.name;
+        document.getElementById('resCollege').textContent = match.college;
+        document.getElementById('resBatch').textContent = match.batch;
+        crossfadeTo('success');
+      } else {
+        crossfadeTo('notfound');
+      }
+    }, 1100);
+  });
+
+  card.querySelectorAll('[data-action="reset"]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.getElementById('verifyForm').reset();
+      fCollege.disabled = true;
+      fCollege.innerHTML = '<option value="" disabled selected>Select a state first</option>';
+      crossfadeTo('form');
+    });
+  });
+
+  document.getElementById('continueBtn').addEventListener('click', function () {
+    window.location.href = 'index.html';
+  });
+</script>
+
+</body>
+</html>
