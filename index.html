@@ -137,10 +137,10 @@
   }
   .tag .sw{ width:8px; height:8px; border-radius:50%; }
   .tag.tg .sw{ background:var(--tag-green); } .tag.tg{ color:var(--tag-green); border-color:rgba(0,184,163,0.3); }
-  .tag.ty .sw{ background:var(--tag-yellow); } .tag.ty{ color:var(--tag-yellow); border-color:rgba(255,192,30,0.3); }
+  .tag.ty .sw{ background:#8b5cf6; } .tag.ty{ color:#8b5cf6; border-color:rgba(139,92,246,0.3); }
   .tag.tr .sw{ background:var(--tag-red); } .tag.tr{ color:var(--tag-red); border-color:rgba(255,55,95,0.3); }
   .tag.tg:hover{ box-shadow:0 0 0 3px rgba(0,184,163,0.14); transform:translateY(-1px); }
-  .tag.ty:hover{ box-shadow:0 0 0 3px rgba(255,192,30,0.14); transform:translateY(-1px); }
+  .tag.ty:hover{ box-shadow:0 0 0 3px rgba(139,92,246,0.14); transform:translateY(-1px); }
   .tag.tr:hover{ box-shadow:0 0 0 3px rgba(255,55,95,0.14); transform:translateY(-1px); }
 
   .hero h1{
@@ -158,9 +158,9 @@
     filter:drop-shadow(0 0 22px rgba(0,184,163,0.3));
   }
   .hero h1 .role-college{
-    background:linear-gradient(100deg, #ffd766 10%, var(--tag-yellow) 55%, #ffb100 90%);
+    background:linear-gradient(100deg, #a78bfa 10%, #8b5cf6 55%, #7c3aed 90%);
     -webkit-background-clip:text; background-clip:text; color:transparent;
-    filter:drop-shadow(0 0 22px rgba(255,192,30,0.3));
+    filter:drop-shadow(0 0 22px rgba(139,92,246,0.35));
   }
   .hero h1 .role-recruiter{
     background:linear-gradient(100deg, #ff7d9d 10%, var(--tag-red) 55%, #ff375f 90%);
@@ -168,9 +168,24 @@
     filter:drop-shadow(0 0 22px rgba(255,55,95,0.3));
   }
   .hero p.lede{ font-size:1.04rem; line-height:1.65; color:var(--muted); max-width:480px; margin:0 0 30px; }
-  .hero-actions{ display:flex; gap:12px; flex-wrap:wrap; justify-content:flex-start; }
+  .hero-actions{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:12px !important;
+  width:100% !important;
+}
 
-  .hero-stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+.hero-actions .btn-primary{
+  width:100% !important;
+  justify-content:center !important;
+}
+
+.hero-actions .btn-ghost{
+  width:100% !important;
+  justify-content:center !important;
+}
+
+  .hero-stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; align-content:start; }
 
   @keyframes fadeUp{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
   .hero-copy > *{ opacity:0; animation:fadeUp .7s var(--ease) forwards; }
@@ -228,16 +243,16 @@
   }
   .pillar:hover .pillar-icon{ transform:scale(1.1) rotate(-4deg); }
   .pillar-green .pillar-icon{ color:var(--tag-green); }
-  .pillar-yellow .pillar-icon{ color:var(--tag-yellow); }
+  .pillar-yellow .pillar-icon{ color:#8b5cf6; }
   .pillar-red .pillar-icon{ color:var(--tag-red); }
   .pillar-green:hover{ border-color:rgba(0,184,163,0.4); }
-  .pillar-yellow:hover{ border-color:rgba(255,192,30,0.4); }
+  .pillar-yellow:hover{ border-color:rgba(139,92,246,0.4); }
   .pillar-red:hover{ border-color:rgba(255,55,95,0.4); }
 
   .pillar-green.selected{ background:linear-gradient(165deg, rgba(0,184,163,0.2), rgba(0,184,163,0.07)); border-color:rgba(0,184,163,0.45); }
   .pillar-green.selected .pillar-icon{ background:rgba(0,184,163,0.28); border-color:rgba(0,184,163,0.5); }
-  .pillar-yellow.selected{ background:linear-gradient(165deg, rgba(255,192,30,0.18), rgba(255,192,30,0.06)); border-color:rgba(255,192,30,0.45); }
-  .pillar-yellow.selected .pillar-icon{ background:rgba(255,192,30,0.26); border-color:rgba(255,192,30,0.5); }
+  .pillar-yellow.selected{ background:linear-gradient(165deg, rgba(139,92,246,0.18), rgba(139,92,246,0.06)); border-color:rgba(139,92,246,0.45); }
+  .pillar-yellow.selected .pillar-icon{ background:rgba(139,92,246,0.26); border-color:rgba(139,92,246,0.5); }
   .pillar-red.selected{ background:linear-gradient(165deg, rgba(255,55,95,0.18), rgba(255,55,95,0.06)); border-color:rgba(255,55,95,0.45); }
   .pillar-red.selected .pillar-icon{ background:rgba(255,55,95,0.26); border-color:rgba(255,55,95,0.5); }
   .pillar h3{ font-family:var(--font-d); font-size:1.02rem; font-weight:600; margin:0 0 6px; color:var(--ink); }
@@ -348,7 +363,7 @@
   .reveal{ opacity:0; transform:translateY(18px); transition:opacity .6s var(--ease), transform .6s var(--ease); }
   .reveal.visible{ opacity:1; transform:none; }
 
-  @media (max-width:900px){
+  @media (max-width:600px){
     .nav-toggle{ display:flex; }
     .nav-links{
       position:absolute; top:100%; left:0; right:0; flex-direction:column; gap:0;
@@ -364,6 +379,7 @@
     .feature-grid{ grid-template-columns:1fr; }
     .contact-inner{ flex-direction:column; align-items:flex-start; }
     .hero-grid{ grid-template-columns:1fr; }
+    .hero-stats{ grid-template-columns:repeat(2,1fr); }
     .hero-copy{ text-align:left; }
     .step-grid{ grid-template-columns:1fr; }
     .proof-split{ grid-template-columns:1fr; }
@@ -444,6 +460,20 @@
     .modal-overlay, .modal, .modal-panel, .modal-success{ transition:none; }
   }
 
+
+  .hero-grid {
+    display: grid !important;
+    grid-template-columns: 1.05fr 0.95fr !important;
+    gap: 56px !important;
+    align-items: center !important;
+  }
+
+  .hero-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+
 </style>
 </head>
 <body>
@@ -495,18 +525,24 @@
 
       <div class="tag-row">
         <span class="tag tg"><span class="sw"></span>student</span>
-        <span class="tag ty"><span class="sw"></span>teacher</span>
+        <span class="tag ty"><span class="sw"></span>college</span>
         <span class="tag tr"><span class="sw"></span>recruiter</span>
       </div>
 
-      <div class="hero-actions">
-        <button class="btn btn-primary" data-modal="get-started">
-          Get Started
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-        <button class="btn btn-ghost" data-modal="signin">Sign In</button>
-      </div>
-    </div>
+     <div class="hero-actions">
+  <button class="btn btn-primary" data-modal="get-started">
+    Get Started
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+      <path d="M5 12h14M13 6l6 6-6 6"/>
+    </svg>
+  </button>
+
+  <button class="btn btn-ghost" data-modal="signin">
+    Sign In
+  </button>
+</div>
+
+    </div><!-- end hero-copy -->
 
     <div class="hero-stats">
       <div class="mtile brand reveal">
@@ -530,7 +566,8 @@
         <div class="m-foot">Companies actively hiring</div>
       </div>
     </div>
-    </div>
+
+    </div><!-- end hero-grid -->
   </section>
 
   <section class="pipeline">
@@ -718,14 +755,10 @@
       <div>
         <div class="eyebrow">// get involved</div>
         <h2>Ready to <span class="accent-text">cross the bridge?</span></h2>
-        <p class="lede">Whether you're a student building a profile, a college piloting the dashboard, or a recruiter hiring — we're onboarding early users now.</p>
+        <p class="lede">Your next opportunity is one connection away. Reach out and our team will personally guide you — we're here to make sure no talent goes unnoticed and no door stays closed.</p>
       </div>
       <div class="contact-actions">
-        <button class="btn btn-primary" data-modal="get-started">
-          Get Started
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-        <button class="btn btn-ghost" data-modal="contact">Contact us</button>
+        <button class="btn btn-ghost" data-modal="contact" style="padding:14px 32px;font-size:1rem;">Contact us</button>
       </div>
     </div>
     </div>
@@ -991,5 +1024,8 @@
     });
   }
 </script>
+
+
+
 </body>
 </html>
