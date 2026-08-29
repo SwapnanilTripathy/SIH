@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
+    color-scheme: dark light;
     --bg:      #1a1a1a;
     --panel:   #262626;
     --panel-2: #2d2d2d;
@@ -20,6 +21,10 @@
     --tag-green:  #00b8a3;
     --tag-yellow: #ffc01e;
     --tag-red:    #ff375f;
+    --nav-bg:  rgba(26,26,26,0.85);
+    --glow-1:  rgba(255,161,22,0.13);
+    --glow-2:  rgba(204,128,18,0.10);
+    --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2397979c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
     --font-d: 'Fraunces', serif;
     --font-b: 'IBM Plex Sans', sans-serif;
     --font-m: 'IBM Plex Mono', monospace;
@@ -27,6 +32,25 @@
     --ease-pop: cubic-bezier(.34,1.56,.64,1);
     --card-shadow: 0 10px 30px -22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.045);
     --card-shadow-hover: 0 16px 36px -18px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+
+  @media (prefers-color-scheme: light){
+    :root{
+      color-scheme: light dark;
+      --bg:      #f5f3ee;
+      --panel:   #ffffff;
+      --panel-2: #faf8f3;
+      --border:  #e2ddd0;
+      --ink:     #1c1c1e;
+      --muted:   #6c6c72;
+      --nav-bg:  rgba(245,243,238,0.85);
+      --glow-1:  rgba(255,161,22,0.09);
+      --glow-2:  rgba(204,128,18,0.07);
+      --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236c6c72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      --card-shadow: 0 10px 26px -20px rgba(20,20,20,0.14), inset 0 1px 0 rgba(255,255,255,0.6);
+      --card-shadow-hover: 0 14px 32px -16px rgba(20,20,20,0.18), inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+    .grain{ opacity:0.025; }
   }
   *,*::before,*::after{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
@@ -38,10 +62,10 @@
   svg,img{ display:block; max-width:100%; }
 
   .glow{ position:fixed; width:640px; height:640px; top:-280px; right:-220px; border-radius:50%;
-    background:radial-gradient(circle, rgba(255,161,22,0.13), transparent 70%);
+    background:radial-gradient(circle, var(--glow-1), transparent 70%);
     filter:blur(90px); pointer-events:none; z-index:0; }
   .glow-2{ position:fixed; width:520px; height:520px; bottom:-260px; left:-180px; border-radius:50%;
-    background:radial-gradient(circle, rgba(204,128,18,0.10), transparent 70%);
+    background:radial-gradient(circle, var(--glow-2), transparent 70%);
     filter:blur(90px); pointer-events:none; z-index:0; }
   .grain{
     position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.035; mix-blend-mode:overlay;
@@ -58,7 +82,7 @@
     display:flex; align-items:center; justify-content:space-between;
     padding:18px clamp(20px,5vw,64px);
     position:sticky; top:0; z-index:40;
-    background:rgba(26,26,26,0.85);
+    background:var(--nav-bg);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--border);
   }
@@ -139,7 +163,7 @@
     outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(255,161,22,0.15);
   }
   .verify-form select{ appearance:none; -webkit-appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2397979c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-image:var(--select-arrow);
     background-repeat:no-repeat; background-position:right 12px center; background-size:16px; padding-right:38px;
   }
   .verify-form select[disabled]{ opacity:0.5; cursor:not-allowed; }
