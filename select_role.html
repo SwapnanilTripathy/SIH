@@ -213,7 +213,7 @@
     </div>
 
     <div class="role-grid">
-      <a class="role-card role-green" href="verify_student.html">
+      <a class="role-card role-green" data-role="student" href="verify_student.html">
         <div class="role-icon">
           <svg viewBox="0 0 28 22" width="22" height="17" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path d="M0 8 L14 0 L28 8 L14 16 Z"/>
@@ -230,7 +230,7 @@
         </span>
       </a>
 
-      <a class="role-card role-yellow" href="verify_college.html">
+      <a class="role-card role-yellow" data-role="college" href="verify_college.html">
         <div class="role-icon">
           <svg viewBox="0 0 26 19" width="20" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path d="M0 7 L13 0 L26 7"/>
@@ -249,7 +249,7 @@
         </span>
       </a>
 
-      <a class="role-card role-red" href="verify_recruiter.html">
+      <a class="role-card role-red" data-role="recruiter" href="verify_recruiter.html">
         <div class="role-icon">
           <svg viewBox="0 0 26 22" width="20" height="17" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <rect x="0" y="5" width="26" height="17" rx="2"/>
@@ -278,6 +278,16 @@
     <span>Already have an account? <a href="index.html" style="color:var(--brand);text-decoration:underline;text-underline-offset:2px;">Sign in from the homepage</a>.</span>
   </footer>
 </div>
+
+<script>
+  // Persist the chosen role (student / college / recruiter) so the next page
+  // and eventual backend calls don't need to re-derive it from the filename.
+  document.querySelectorAll('.role-card[data-role]').forEach(function (card) {
+    card.addEventListener('click', function () {
+      sessionStorage.setItem('sb_selected_role', card.getAttribute('data-role'));
+    });
+  });
+</script>
 
 </body>
 </html>
