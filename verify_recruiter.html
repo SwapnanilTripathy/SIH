@@ -520,7 +520,8 @@
   });
 
   document.getElementById('continueBtn').addEventListener('click', function () {
-    window.location.href = 'index.html';
+    sessionStorage.setItem('sb_selected_role', 'recruiter');
+    window.location.href = 'sign_up.html';
   });
 </script>
 </body>
