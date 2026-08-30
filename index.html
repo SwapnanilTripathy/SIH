@@ -557,12 +557,12 @@
       </div>
 
      <div class="hero-actions">
-  <button class="btn btn-primary" data-modal="get-started">
+  <a class="btn btn-primary" href="select-role.html">
     Get Started
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
       <path d="M5 12h14M13 6l6 6-6 6"/>
     </svg>
-  </button>
+  </a>
 
   <button class="btn btn-ghost" data-modal="signin">
     Sign In
@@ -811,22 +811,7 @@
         <label>Password<input type="password" required placeholder="••••••••"></label>
         <button type="submit" class="btn btn-primary modal-submit">Sign In</button>
       </form>
-      <p class="modal-switch">New here? <a href="#" data-switch="get-started">Get started</a></p>
-    </div>
-
-    <div class="modal-panel" data-panel="get-started">
-      <div class="eyebrow">// join skillbridge</div>
-      <h3>Get started</h3>
-      <div class="role-select">
-        <button type="button" class="role-btn role-green active" data-role="student">Student</button>
-        <button type="button" class="role-btn role-yellow" data-role="college">College</button>
-        <button type="button" class="role-btn role-red" data-role="recruiter">Recruiter</button>
-      </div>
-      <form class="modal-form" data-form="get-started">
-        <label>Email<input type="email" required placeholder="you@example.com"></label>
-        <button type="submit" class="btn btn-primary modal-submit">Join the waitlist</button>
-      </form>
-      <p class="modal-switch">Already onboard? <a href="#" data-switch="signin">Sign in</a></p>
+      <p class="modal-switch">New here? <a href="select-role.html">Get started</a></p>
     </div>
 
     <div class="modal-panel" data-panel="contact">
@@ -960,8 +945,12 @@
 
     var successMessages = {
       signin: "Welcome back — you're signed in.",
-      'get-started': "You're on the list — we'll email you when your access is ready.",
       contact: "Thanks — we'll get back to you shortly."
+    };
+
+    var errorMessages = {
+      signin: "Couldn't sign you in — check your email and password.",
+      contact: "Couldn't send that — please try again."
     };
 
     function crossfadeTo(showEl, hideEls) {
@@ -1032,13 +1021,84 @@
       });
     });
 
+    function setFormError(form, message) {
+      var existing = form.querySelector('.modal-error');
+      if (!message) {
+        if (existing) existing.remove();
+        return;
+      }
+      if (!existing) {
+        existing = document.createElement('p');
+        existing.className = 'modal-error';
+        existing.style.color = 'var(--tag-red)';
+        existing.style.fontSize = '0.85rem';
+        existing.style.margin = '-4px 0 0';
+        form.insertBefore(existing, form.querySelector('button[type="submit"]'));
+      }
+      existing.textContent = message;
+    }
+
+    function setSubmitting(form, isSubmitting) {
+      var btn = form.querySelector('button[type="submit"]');
+      if (!btn) return;
+      btn.disabled = isSubmitting;
+      if (isSubmitting) {
+        btn.dataset.originalText = btn.textContent;
+        btn.textContent = 'Please wait…';
+      } else if (btn.dataset.originalText) {
+        btn.textContent = btn.dataset.originalText;
+      }
+    }
+
     modalOverlay.querySelectorAll('form[data-form]').forEach(function (form) {
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         var kind = form.getAttribute('data-form');
-        modalSuccessText.textContent = successMessages[kind] || "Thanks — we'll be in touch.";
-        crossfadeTo(modalSuccess, Array.prototype.slice.call(modalPanels));
-        form.reset();
+        setFormError(form, null);
+        setSubmitting(form, true);
+
+        var requestPromise;
+
+        if (kind === 'signin') {
+          var email = form.querySelector('input[type="email"]').value.trim();
+          var password = form.querySelector('input[type="password"]').value;
+          requestPromise = fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: password })
+          }).then(function (r) {
+            return r.json().then(function (data) { return { ok: r.ok, data: data }; });
+          }).then(function (result) {
+            if (!result.ok) throw new Error(result.data.error || errorMessages.signin);
+            if (result.data.token) localStorage.setItem('sb_token', result.data.token);
+            if (result.data.user) localStorage.setItem('sb_user', JSON.stringify(result.data.user));
+          });
+        } else if (kind === 'contact') {
+          var cName = form.querySelector('input[type="text"]').value.trim();
+          var cEmail = form.querySelector('input[type="email"]').value.trim();
+          var cMessage = form.querySelector('textarea').value.trim();
+          requestPromise = fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: cName, email: cEmail, message: cMessage })
+          }).then(function (r) {
+            return r.json().then(function (data) { return { ok: r.ok, data: data }; });
+          }).then(function (result) {
+            if (!result.ok) throw new Error(result.data.error || errorMessages.contact);
+          });
+        } else {
+          requestPromise = Promise.resolve();
+        }
+
+        requestPromise.then(function () {
+          setSubmitting(form, false);
+          modalSuccessText.textContent = successMessages[kind] || "Thanks — we'll be in touch.";
+          crossfadeTo(modalSuccess, Array.prototype.slice.call(modalPanels));
+          form.reset();
+        }).catch(function (err) {
+          setSubmitting(form, false);
+          setFormError(form, err.message || errorMessages[kind] || 'Something went wrong.');
+        });
       });
     });
 
@@ -1051,5 +1111,8 @@
     });
   }
 </script>
+
+
+
 </body>
 </html>
