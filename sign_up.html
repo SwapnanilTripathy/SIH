@@ -438,7 +438,7 @@
       </button>
     </form>
 
-    <p class="auth-footer">Already have an account? <a href="signin.html">Sign in →</a></p>
+    <p class="auth-footer">Already have an account? <a href="sign_in.html">Sign in →</a></p>
   </div>
 </main>
 
@@ -457,8 +457,20 @@
     card.addEventListener('click', function() {
       roleCards.forEach(function(c){ c.classList.remove('active'); });
       card.classList.add('active');
+      sessionStorage.setItem('sb_selected_role', card.getAttribute('data-role'));
     });
   });
+
+  // Pre-select the role chosen earlier on select_role.html / a verify page, if any
+  (function () {
+    var storedRole = sessionStorage.getItem('sb_selected_role');
+    if (!storedRole) return;
+    var match = document.querySelector('.role-card[data-role="' + storedRole + '"]');
+    if (match) {
+      roleCards.forEach(function (c) { c.classList.remove('active'); });
+      match.classList.add('active');
+    }
+  })();
 
   // PW toggles
   function makePwToggle(btnId, inputId, iconId) {
