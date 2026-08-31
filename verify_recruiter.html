@@ -3,6 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  (function () {
+    var saved = localStorage.getItem('sb-theme');
+    if (saved) {
+      document.documentElement.setAttribute('data-theme', saved);
+    } else {
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+    }
+  })();
+</script>
 <title>SkillBridge — Verify Recruiter Account</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ffa116'/%3E%3Cg fill='none' stroke='%231a1a1a' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 40 L14 26 M50 40 L50 26'/%3E%3Cpath d='M14 26 C24 6, 40 6, 50 26'/%3E%3Cline x1='9' y1='40' x2='55' y2='40'/%3E%3Cline x1='24' y1='28' x2='24' y2='40'/%3E%3Cline x1='32' y1='20' x2='32' y2='40'/%3E%3Cline x1='40' y1='28' x2='40' y2='40'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,7 +47,7 @@
   }
 
   @media (prefers-color-scheme: light){
-    :root{
+    :root:not([data-theme="dark"]){
       color-scheme: light dark;
       --bg:      #f5f3ee;
       --panel:   #ffffff;
@@ -80,6 +91,20 @@
     background:linear-gradient(90deg, transparent, var(--brand), transparent); opacity:0.8; }
 
   /* ---------- nav ---------- */
+  .theme-btn{
+    width:36px; height:36px; border-radius:9px; border:1px solid var(--border);
+    background:var(--panel); color:var(--muted); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:border-color .2s var(--ease), color .2s var(--ease);
+    flex-shrink:0;
+  }
+  .theme-btn:hover{ border-color:var(--brand); color:var(--brand); }
+  .theme-btn svg{ width:16px; height:16px; }
+  .icon-sun{ display:none; } .icon-moon{ display:block; }
+  [data-theme="light"] .icon-sun{ display:block; }
+  [data-theme="light"] .icon-moon{ display:none; }
+
+
   .nav{
     display:flex; align-items:center; justify-content:space-between;
     padding:18px clamp(20px,5vw,64px);
@@ -287,6 +312,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
       Back to home
     </a>
+    <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
   </nav>
 
   <section class="verify-wrap">
@@ -523,6 +552,14 @@
     sessionStorage.setItem('sb_selected_role', 'recruiter');
     window.location.href = 'sign_up.html';
   });
+  var themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', function () {
+    var current = document.documentElement.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('sb-theme', next);
+  });
+
 </script>
 </body>
 </html>
